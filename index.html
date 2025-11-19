@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Educational AI Chatbot</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <header>
             <h1>Educational AI Chatbot</h1>
             <p class="subtitle">Safe, Controlled Learning Environment</p>
         </header>
-        
+
         <div class="chat-container">
             <div class="config-panel">
+
+                <div class="prompt-preview">
+                    <strong>Preview:</strong>
+                    <div id="system-preview">System: Act as a friendly tutor for a CBSE 10th Grade Mathematics student.
+                    </div>
+                    <div id="user-preview">User: Generate 5 practice problems on 'Algebra' with solutions.</div>
+                </div>
+
+                <button id="send-btn" class="btn btn-primary btn-full">Generate Educational Content</button>
+
                 <div class="form-group">
                     <label for="model">AI Model</label>
                     <select id="model">
@@ -37,7 +49,7 @@
                         <option value="unity">Unity</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="reasoning-effort">Reasoning Effort</label>
                     <select id="reasoning-effort">
@@ -47,7 +59,7 @@
                         <option value="high">High</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="system-prompt">System Role</label>
                     <select id="system-prompt">
@@ -55,53 +67,19 @@
                         <option value="teacher">Strict Teacher</option>
                         <option value="explainer">Concept Explainer</option>
                         <option value="simplifier">Content Simplifier</option>
+                        <option value="examiner">Exam Specialist</option>
+                        <option value="career-guide">Career Guide</option>
+                        <option value="storyteller">Storyteller</option>
+                        <option value="scientist">Scientist</option>
+                        <option value="problem-solver">Problem Solver</option>
+                        <option value="motivator">Motivational Coach</option>
+                        <option value="visual-teacher">Visual Teacher</option>
+                        <option value="critical-thinker">Critical Thinking Guide</option>
+                        <option value="practical-guide">Practical Guide</option>
+                        <option value="quick-learner">Quick Learning Coach</option>
+                        <option value="doubt-solver">Doubt Solver</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
-                    <label for="board">Educational Board</label>
-                    <select id="board">
-                        <option value="CBSE">CBSE</option>
-                        <option value="ICSE">ICSE</option>
-                        <option value="State Board">State Board</option>
-                        <option value="IB">International Baccalaureate</option>
-                        <option value="Cambridge">Cambridge</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="class">Class/Grade</label>
-                    <select id="class">
-                        <option value="1st Grade">1st Grade</option>
-                        <option value="2nd Grade">2nd Grade</option>
-                        <option value="3rd Grade">3rd Grade</option>
-                        <option value="4th Grade">4th Grade</option>
-                        <option value="5th Grade">5th Grade</option>
-                        <option value="6th Grade">6th Grade</option>
-                        <option value="7th Grade">7th Grade</option>
-                        <option value="8th Grade">8th Grade</option>
-                        <option value="9th Grade">9th Grade</option>
-                        <option value="10th Grade" selected>10th Grade</option>
-                        <option value="11th Grade">11th Grade</option>
-                        <option value="12th Grade">12th Grade</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <select id="subject">
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Science">Science</option>
-                        <option value="Physics">Physics</option>
-                        <option value="Chemistry">Chemistry</option>
-                        <option value="Biology">Biology</option>
-                        <option value="English">English</option>
-                        <option value="History">History</option>
-                        <option value="Geography">Geography</option>
-                        <option value="Computer Science">Computer Science</option>
-                    </select>
-                </div>
-                
                 <div class="form-group">
                     <label for="topic-type">Learning Activity</label>
                     <select id="topic-type">
@@ -110,61 +88,71 @@
                         <option value="study-plan">Create Study Plan</option>
                         <option value="quiz">Generate Quiz</option>
                         <option value="examples">Real-life Examples</option>
+                        <option value="summary">Chapter Summary</option>
+                        <option value="differences">Compare & Contrast</option>
+                        <option value="formulas">Formulas & Equations</option>
+                        <option value="definitions">Key Definitions</option>
+                        <option value="project-ideas">Project Ideas</option>
+                        <option value="common-mistakes">Common Mistakes</option>
+                        <option value="advanced-questions">Advanced Questions</option>
+                        <option value="visual-learning">Visual Learning Aids</option>
+                        <option value="revision-notes">Revision Notes</option>
+                        <option value="mind-map">Mind Map</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="chapter">Chapter/Topic</label>
-                    <select id="chapter">
-                        <!-- Math topics -->
-                        <option value="Algebra">Algebra</option>
-                        <option value="Geometry">Geometry</option>
-                        <option value="Trigonometry">Trigonometry</option>
-                        <option value="Calculus">Calculus</option>
-                        <option value="Statistics">Statistics</option>
-                        <option value="Number System">Number System</option>
-                        
-                        <!-- Science topics -->
-                        <option value="Force and Motion">Force and Motion</option>
-                        <option value="Atoms and Molecules">Atoms and Molecules</option>
-                        <option value="Human Body">Human Body</option>
-                        <option value="Electricity">Electricity</option>
-                        <option value="Chemical Reactions">Chemical Reactions</option>
-                        
-                        <!-- Other subjects -->
-                        <option value="Grammar">Grammar</option>
-                        <option value="World Wars">World Wars</option>
-                        <option value="Climate">Climate</option>
-                        <option value="Programming Basics">Programming Basics</option>
+                    <label for="board">Educational Board</label>
+                    <select id="board">
+                        <option value="CBSE">CBSE</option>
+                        <!-- <option value="ICSE">ICSE</option>
+                        <option value="State Board">State Board</option>
+                        <option value="IB">International Baccalaureate</option>
+                        <option value="Cambridge">Cambridge</option> -->
                     </select>
                 </div>
-                
-                <div class="prompt-preview">
-                    <strong>Preview:</strong>
-                    <div id="system-preview">System: Act as a friendly tutor for a CBSE 10th Grade Mathematics student.</div>
-                    <div id="user-preview">User: Generate 5 practice problems on 'Algebra' with solutions.</div>
+
+                <div class="form-group">
+                    <label for="class">Class/Grade</label>
+                    <select id="class"></select>
                 </div>
-                
+                <div class="form-group hidden" id="subject-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject"></select>
+                </div>
+                <div class="form-group hidden" id="chapter-group">
+                    <label for="chapter">Chapter/Topic</label>
+                    <select id="chapter"></select>
+                </div>
+                <div class="form-group hidden" id="topic-group">
+                    <label for="topic">Topic</label>
+                    <select id="topic"></select>
+                </div>
+                <div class="form-group hidden" id="subtopic-group">
+                    <label for="subtopic">Subtopic</label>
+                    <select id="subtopic"></select>
+                </div>
+
                 <div class="guardrail-notice">
                     <strong>Safety Controls Active:</strong> All inputs are restricted to educational options only.
                 </div>
-                
-                <button id="send-btn" class="btn btn-primary btn-full">Generate Educational Content</button>
             </div>
-            
+
             <div class="chat-area">
                 <div class="messages-container" id="messages-container">
                     <div class="message assistant-message">
                         <div class="message-header">Educational Assistant</div>
-                        <div class="message-content">Welcome! I'm your educational AI assistant. Configure your learning preferences on the left and click "Generate Educational Content" to get started with personalized learning materials.</div>
+                        <div class="message-content">Welcome! I'm your educational AI assistant. Configure your learning
+                            preferences on the left and click "Generate Educational Content" to get started with
+                            personalized learning materials.</div>
                     </div>
                 </div>
-                
+
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
                     <p>Generating educational content...</p>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="quick-actions">Quick Actions for Follow up</label>
                     <select id="quick-actions">
@@ -174,16 +162,38 @@
                         <option value="simpler-explanation">Explain in simpler terms</option>
                         <option value="related-topics">Show related topics</option>
                         <option value="test-knowledge">Test my knowledge</option>
+                        <option value="step-by-step">Show step-by-step solution</option>
+                        <option value="common-mistakes">Highlight common mistakes</option>
+                        <option value="real-world">More real-world applications</option>
+                        <option value="visual-aids">Provide visual aids/diagrams</option>
+                        <option value="practice-questions">More practice questions</option>
+                        <option value="key-points">Summarize key points</option>
+                        <option value="formulas">List important formulas</option>
+                        <option value="definitions">Key definitions & terms</option>
+                        <option value="study-tips">Study tips for this topic</option>
+                        <option value="exam-tips">Exam preparation tips</option>
+                        <option value="advanced-concepts">Explore advanced concepts</option>
+                        <option value="career-connections">Career connections</option>
+                        <option value="project-ideas">Project ideas</option>
+                        <option value="mind-map">Create a mind map</option>
+                        <option value="compare-contrast">Compare with similar topics</option>
+                        <option value="history-context">Historical context</option>
+                        <option value="quick-revision">Quick revision notes</option>
+                        <option value="difficulty-increase">Increase difficulty level</option>
+                        <option value="difficulty-decrease">Decrease difficulty level</option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
-    <div id="custom-context-menu" style="display:none; position:absolute; z-index:1000; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-        <div id="ask-followup" style="padding:10px 20px; cursor:pointer;">Ask follow-up question with selected text</div>
+    <div id="custom-context-menu"
+        style="display:none; position:absolute; z-index:1000; background:#fff; border:1px solid #ccc; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+        <div id="ask-followup" style="padding:10px 20px; cursor:pointer;">Ask follow-up question with selected text
+        </div>
         <div id="add-to-queue" style="padding:10px 20px; cursor:pointer;">Add to Sentence Builder</div>
     </div>
-    <div id="sentence-builder-panel" style="display:none; position:fixed; bottom:30px; right:30px; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); padding:16px; min-width:300px; z-index:1001;">
+    <div id="sentence-builder-panel"
+        style="display:none; position:fixed; bottom:30px; right:30px; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); padding:16px; min-width:300px; z-index:1001;">
         <div style="font-weight:600; margin-bottom:8px;">Sentence Builder</div>
         <div id="queue-list" style="margin-bottom:12px; color:#333;"></div>
         <button id="clear-queue" class="btn" style="margin-right:8px;">Clear</button>
@@ -191,4 +201,5 @@
     </div>
     <script src="main.js"></script>
 </body>
+
 </html>
