@@ -68,6 +68,17 @@ document.addEventListener('DOMContentLoaded', function() {
         userPreview.textContent = `User: ${userContent}`;
     }
     
+    // Simulation mode detection
+    const urlParams = new URLSearchParams(window.location.search);
+    const simulationMode = urlParams.get('simulation') === 'true';
+
+    function simulateApiResponse(userPrompt) {
+        // Simple simulated response based on userPrompt
+        return Promise.resolve({
+            choices: [{ message: { content: `Simulated response for: ${userPrompt}` } }]
+        });
+    }
+    
     async function generateContent() {
         // Get configuration values
         const model = modelSelect.value;
@@ -93,36 +104,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Display user message in chat
         addMessage('user', userContent);
-        
         // Show loading
         loading.style.display = 'block';
-        
         try {
-            // Make API call
-            const response = await fetch('https://text.pollinations.ai/openai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: model,
-                    reasoning_effort: reasoningEffort,
-                    messages: [
-                        { role: "system", content: systemContent },
-                        { role: "user", content: userContent }
-                    ]
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
+            let data;
+            if (simulationMode) {
+                data = await simulateApiResponse(userContent);
+            } else {
+                // Make API call
+                const response = await fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: userContent }
+                        ]
+                    })
+                });
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                data = await response.json();
             }
-            
-            const data = await response.json();
-            
             // Hide loading
             loading.style.display = 'none';
-            
             // Display assistant response
             if (data.choices && data.choices[0] && data.choices[0].message) {
                 addMessage('assistant', data.choices[0].message.content);
@@ -134,8 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             // Hide loading
             loading.style.display = 'none';
-            
-            // Display error message
             addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
             console.error('API Error:', error);
         }
@@ -171,10 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (followUpMessage) {
             addMessage('user', followUpMessage);
-            
-            // Show loading
             loading.style.display = 'block';
-            
             // Get configuration values for context
             const model = modelSelect.value;
             const reasoningEffort = reasoningEffortSelect.value;
@@ -189,42 +194,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 .replace('{class}', cls)
                 .replace('{subject}', subject);
             
-            // Make API call
-            fetch('https://text.pollinations.ai/openai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: model,
-                    reasoning_effort: reasoningEffort,
-                    messages: [
-                        { role: "system", content: systemContent },
-                        { role: "user", content: followUpMessage }
-                    ]
+            if (simulationMode) {
+                simulateApiResponse(followUpMessage).then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                });
+            } else {
+                // Make API call
+                fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: followUpMessage }
+                        ]
+                    })
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                loading.style.display = 'none';
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    addMessage('assistant', data.choices[0].message.content);
-                } else if (data.content) {
-                    addMessage('assistant', data.content);
-                } else {
-                    addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
-                }
-            })
-            .catch(error => {
-                loading.style.display = 'none';
-                addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
-                console.error('API Error:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+                    console.error('API Error:', error);
+                });
+            }
         }
     }
     
@@ -280,42 +298,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 .replace('{board}', board)
                 .replace('{class}', cls)
                 .replace('{subject}', subject);
-            // Make API call
-            fetch('https://text.pollinations.ai/openai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: model,
-                    reasoning_effort: reasoningEffort,
-                    messages: [
-                        { role: "system", content: systemContent },
-                        { role: "user", content: selectedText }
-                    ]
+            if (simulationMode) {
+                simulateApiResponse(selectedText).then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                });
+            } else {
+                // Make API call
+                fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: selectedText }
+                        ]
+                    })
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                loading.style.display = 'none';
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    addMessage('assistant', data.choices[0].message.content);
-                } else if (data.content) {
-                    addMessage('assistant', data.content);
-                } else {
-                    addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
-                }
-            })
-            .catch(error => {
-                loading.style.display = 'none';
-                addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
-                console.error('API Error:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+                    console.error('API Error:', error);
+                });
+            }
         }
         contextMenu.style.display = 'none';
     });
@@ -365,42 +396,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 .replace('{board}', board)
                 .replace('{class}', cls)
                 .replace('{subject}', subject);
-            // Make API call
-            fetch('https://text.pollinations.ai/openai', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    model: model,
-                    reasoning_effort: reasoningEffort,
-                    messages: [
-                        { role: "system", content: systemContent },
-                        { role: "user", content: fullSentence }
-                    ]
+            if (simulationMode) {
+                simulateApiResponse(fullSentence).then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                });
+            } else {
+                // Make API call
+                fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: fullSentence }
+                        ]
+                    })
                 })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                loading.style.display = 'none';
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    addMessage('assistant', data.choices[0].message.content);
-                } else if (data.content) {
-                    addMessage('assistant', data.content);
-                } else {
-                    addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
-                }
-            })
-            .catch(error => {
-                loading.style.display = 'none';
-                addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
-                console.error('API Error:', error);
-            });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API request failed with status ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+                    console.error('API Error:', error);
+                });
+            }
             sentenceQueue = [];
             updateQueuePanel();
             sentenceBuilderPanel.style.display = 'none';

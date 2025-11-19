@@ -1,0 +1,462 @@
+{
+    "Class7": {
+        "Mathematics": {
+            "Integers": {
+                "Topics": {
+                    "Introduction to Integers": {
+                        "Subtopics": [
+                            "Positive and Negative Numbers",
+                            "Number Line"
+                        ]
+                    },
+                    "Properties of Integers": {
+                        "Subtopics": [
+                            "Closure Property",
+                            "Commutative Property",
+                            "Associative Property",
+                            "Distributive Property"
+                        ]
+                    },
+                    "Operations on Integers": {
+                        "Subtopics": [
+                            "Adding Integers",
+                            "Subtracting Integers",
+                            "Multiplying Integers",
+                            "Dividing Integers"
+                        ]
+                    }
+                }
+            },
+            "Fractions and Decimals": {
+                "Topics": {
+                    "Types of Fractions": {
+                        "Subtopics": [
+                            "Proper Fractions",
+                            "Improper Fractions",
+                            "Mixed Fractions"
+                        ]
+                    },
+                    "Operations on Fractions": {
+                        "Subtopics": [
+                            "Addition",
+                            "Subtraction",
+                            "Multiplication",
+                            "Division"
+                        ]
+                    },
+                    "Decimals": {
+                        "Subtopics": [
+                            "Representation of Decimals",
+                            "Operations on Decimals"
+                        ]
+                    }
+                }
+            }
+        },
+        "Science": {
+            "Nutrition in Plants": {
+                "Topics": {
+                    "Photosynthesis": {
+                        "Subtopics": [
+                            "Process",
+                            "Importance",
+                            "Requirements"
+                        ]
+                    },
+                    "Types of Nutrition": {
+                        "Subtopics": [
+                            "Autotrophic",
+                            "Heterotrophic"
+                        ]
+                    }
+                }
+            },
+            "Heat": {
+                "Topics": {
+                    "Temperature and Heat": {
+                        "Subtopics": [
+                            "Measurement of Temperature",
+                            "Units of Heat"
+                        ]
+                    },
+                    "Transfer of Heat": {
+                        "Subtopics": [
+                            "Conduction",
+                            "Convection",
+                            "Radiation"
+                        ]
+                    }
+                }
+            }
+        },
+        "Social Science": {
+            "History": {
+                "Topics": {
+                    "Medieval India": {
+                        "Subtopics": [
+                            "Political History",
+                            "Society in Medieval India",
+                            "Culture and Architecture"
+                        ]
+                    },
+                    "Understanding Sources": {
+                        "Subtopics": [
+                            "Primary Sources",
+                            "Secondary Sources"
+                        ]
+                    }
+                }
+            },
+            "Geography": {
+                "Topics": {
+                    "Our Environment": {
+                        "Subtopics": [
+                            "Components of Environment",
+                            "Natural Resources"
+                        ]
+                    },
+                    "Inside Our Earth": {
+                        "Subtopics": [
+                            "Structure of Earth",
+                            "Rocks and Minerals"
+                        ]
+                    }
+                }
+            }
+        },
+        "English": {
+            "Honeycomb (Coursebook)": {
+                "Chapters": {
+                    "Three Questions": {
+                        "Subtopics": [
+                            "Plot Summary",
+                            "Moral Lessons",
+                            "Character Analysis"
+                        ]
+                    },
+                    "A Gift of Chappals": {
+                        "Subtopics": [
+                            "Story Summary",
+                            "Themes",
+                            "Author’s Purpose"
+                        ]
+                    },
+                    "Gopal and the Hilsa Fish": {
+                        "Subtopics": [
+                            "Narrative",
+                            "Humor in the Story"
+                        ]
+                    }
+                }
+            },
+            "An Alien Hand": {
+                "Chapters": {
+                    "The Tiny Teacher": {
+                        "Subtopics": [
+                            "Concept of Termite",
+                            "Behavior and Habitat"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Class8": {
+        "Mathematics": {
+            "Rational Numbers": {
+                "Topics": {
+                    "Introduction": {
+                        "Subtopics": [
+                            "Definition",
+                            "Representation on Number Line"
+                        ]
+                    },
+                    "Properties": {
+                        "Subtopics": [
+                            "Closure",
+                            "Commutative",
+                            "Associative",
+                            "Distributive"
+                        ]
+                    },
+                    "Operations": {
+                        "Subtopics": [
+                            "Addition",
+                            "Subtraction",
+                            "Multiplication",
+                            "Division"
+                        ]
+                    }
+                }
+            },
+            "Linear Equations in One Variable": {
+                "Topics": {
+                    "Concept": {
+                        "Subtopics": [
+                            "Forming Equations",
+                            "Solving Equations"
+                        ]
+                    },
+                    "Applications": {
+                        "Subtopics": [
+                            "Word Problems",
+                            "Practical Examples"
+                        ]
+                    }
+                }
+            }
+        },
+        "Science": {
+            "Force and Pressure": {
+                "Topics": {
+                    "Force": {
+                        "Subtopics": [
+                            "Types of Forces",
+                            "Contact and Non-contact Forces"
+                        ]
+                    },
+                    "Pressure": {
+                        "Subtopics": [
+                            "Definition",
+                            "Pressure in Liquids and Gases"
+                        ]
+                    },
+                    "Applications": {
+                        "Subtopics": [
+                            "Hydraulic Machines",
+                            "Atmospheric Pressure"
+                        ]
+                    }
+                }
+            },
+            "Friction": {
+                "Topics": {
+                    "Nature of Friction": {
+                        "Subtopics": [
+                            "Causes",
+                            "Types"
+                        ]
+                    },
+                    "Effects of Friction": {
+                        "Subtopics": [
+                            "Useful and Harmful Effects"
+                        ]
+                    },
+                    "Reducing Friction": {
+                        "Subtopics": [
+                            "Lubricants",
+                            "Ball Bearings"
+                        ]
+                    }
+                }
+            }
+        },
+        "Social Science": {
+            "History": {
+                "Topics": {
+                    "The Indian National Movement": {
+                        "Subtopics": [
+                            "Early Resistance",
+                            "Peasant and Tribal Movements",
+                            "Mass Movements"
+                        ]
+                    },
+                    "Government and Politics": {
+                        "Subtopics": [
+                            "Democracy",
+                            "Local Government"
+                        ]
+                    }
+                }
+            },
+            "Geography": {
+                "Topics": {
+                    "Resources and Development": {
+                        "Subtopics": [
+                            "Types of Resources",
+                            "Sustainable Development"
+                        ]
+                    },
+                    "Agriculture": {
+                        "Subtopics": [
+                            "Types of Farming",
+                            "Cropping Patterns"
+                        ]
+                    }
+                }
+            }
+        },
+        "English": {
+            "Main Course": {
+                "Chapters": {
+                    "The Best Christmas Present": {
+                        "Subtopics": [
+                            "Plot",
+                            "Theme"
+                        ]
+                    },
+                    "The Tsunami": {
+                        "Subtopics": [
+                            "Story Summary",
+                            "Moral Lessons"
+                        ]
+                    },
+                    "Glimpses of the Past": {
+                        "Subtopics": [
+                            "Ancient Civilizations",
+                            "Artifacts"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "Class9": {
+        "Mathematics": {
+            "Number Systems": {
+                "Topics": {
+                    "Real Numbers": {
+                        "Subtopics": [
+                            "Representation on Number Line",
+                            "Operations",
+                            "Laws of Exponents"
+                        ]
+                    },
+                    "Irrational Numbers": {
+                        "Subtopics": [
+                            "Definition",
+                            "Examples"
+                        ]
+                    }
+                }
+            },
+            "Polynomials": {
+                "Topics": {
+                    "Definition": {
+                        "Subtopics": [
+                            "Monomials",
+                            "Binomials",
+                            "Trinomials"
+                        ]
+                    },
+                    "Operations on Polynomials": {
+                        "Subtopics": [
+                            "Addition",
+                            "Subtraction",
+                            "Multiplication"
+                        ]
+                    }
+                }
+            }
+        },
+        "Science": {
+            "Matter in Our Surroundings": {
+                "Topics": {
+                    "States of Matter": {
+                        "Subtopics": [
+                            "Solid",
+                            "Liquid",
+                            "Gas"
+                        ]
+                    },
+                    "Properties of Matter": {
+                        "Subtopics": [
+                            "Volume",
+                            "Mass",
+                            "Density"
+                        ]
+                    }
+                }
+            },
+            "The Fundamental Unit of Life": {
+                "Topics": {
+                    "Cell Structure": {
+                        "Subtopics": [
+                            "Cell Wall",
+                            "Cell Membrane",
+                            "Cytoplasm",
+                            "Nucleus"
+                        ]
+                    },
+                    "Cell Functions": {
+                        "Subtopics": [
+                            "Respiration",
+                            "Reproduction"
+                        ]
+                    }
+                }
+            }
+        },
+        "Social Science": {
+            "History": {
+                "Topics": {
+                    "The French Revolution": {
+                        "Subtopics": [
+                            "Causes",
+                            "Events",
+                            "Effects"
+                        ]
+                    },
+                    "Nazism and the Rise of Hitler": {
+                        "Subtopics": [
+                            "Ideology",
+                            "Impact"
+                        ]
+                    }
+                }
+            },
+            "Geography": {
+                "Topics": {
+                    "India - Physical Features": {
+                        "Subtopics": [
+                            "Mountains",
+                            "Plains",
+                            "Plateaus"
+                        ]
+                    },
+                    "Climate": {
+                        "Subtopics": [
+                            "Factors Affecting Climate",
+                            "Seasons"
+                        ]
+                    }
+                }
+            }
+        },
+        "English": {
+            "Beehive": {
+                "Prose": {
+                    "Chapters": {
+                        "The Fun They Had": [
+                            "Summary",
+                            "Characters",
+                            "Theme"
+                        ],
+                        "The Sound of Music": [
+                            "Summary",
+                            "Characters",
+                            "Theme"
+                        ]
+                    }
+                },
+                "Poems": {
+                    "Chapters": [
+                        "The Road Not Taken",
+                        "Wind"
+                    ]
+                }
+            },
+            "Moments": {
+                "Short Stories": {
+                    "Chapters": [
+                        "The Lost Child",
+                        "The Adventures of Toto"
+                    ]
+                },
+                "Poems": {
+                    "Chapters": []
+                }
+            }
+        }
+    }
+}
