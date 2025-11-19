@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function () {
             item.style.cursor = 'pointer';
             item.style.padding = '8px 12px';
             item.style.borderBottom = '1px solid #eee';
-            item.onclick = function() {
+            item.onclick = function () {
                 currentDocument = name;
                 showDocumentModal(name);
             };
@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('documentOrder', JSON.stringify(documentOrder));
     }
 
-    document.getElementById('create-document-btn').addEventListener('click', function() {
+    document.getElementById('create-document-btn').addEventListener('click', function () {
         const name = prompt('Enter new document name:');
         if (name && !documents[name]) {
             documents[name] = [];
@@ -431,12 +431,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('view-documents-btn').addEventListener('click', function() {
+    document.getElementById('view-documents-btn').addEventListener('click', function () {
         showDocumentModal(currentDocument || documentOrder[0]);
     });
 
     function showDocumentModal(name) {
         console.debug('Opening document modal for:', name);
+        currentDocument = name; // Ensure currentDocument is set to the displayed document
         const documentModal = document.getElementById('document-modal');
         const modalTitle = document.getElementById('modal-document-title');
         const modalEntries = document.getElementById('modal-document-entries');
@@ -453,7 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 item.style.background = '#e9ecef';
                 item.style.fontWeight = 'bold';
             }
-            item.onclick = function() {
+            item.onclick = function () {
                 currentDocument = filename;
                 showDocumentModal(filename);
             };
@@ -464,17 +465,103 @@ document.addEventListener('DOMContentLoaded', function () {
         if (name && documents[name]) {
             documents[name].forEach((entry, i) => {
                 const entryDiv = document.createElement('div');
-                entryDiv.style.marginBottom = '12px';
-                entryDiv.innerHTML = `<strong>Entry ${i+1}:</strong>`;
-                const editor = document.createElement('div');
-                editor.contentEditable = true;
-                editor.className = 'wysiwyg-editor';
-                editor.style.border = '1px solid #ccc';
-                editor.style.padding = '8px';
-                editor.style.borderRadius = '6px';
-                editor.style.background = '#f9f9f9';
-                editor.innerHTML = entry;
-                entryDiv.appendChild(editor);
+                entryDiv.style.marginBottom = '18px';
+                entryDiv.style.display = 'flex';
+                entryDiv.style.flexDirection = 'column';
+                entryDiv.style.alignItems = 'stretch';
+                entryDiv.innerHTML = `<strong style='min-width:80px;'>Entry ${i + 1}:</strong>`;
+
+                // Markdown toolbar
+                const toolbar = document.createElement('div');
+                toolbar.style.display = 'flex';
+                toolbar.style.gap = '6px';
+                toolbar.style.margin = '6px 0';
+                const buttons = [
+                    { label: 'B', action: '**', title: 'Bold' },
+                    { label: 'I', action: '_', title: 'Italic' },
+                    { label: 'H1', action: '# ', title: 'Heading 1' },
+                    { label: 'H2', action: '## ', title: 'Heading 2' },
+                    { label: 'List', action: '- ', title: 'List' },
+                    { label: 'Code', action: '`', title: 'Inline Code' }
+                ];
+                // Markdown textarea
+                const textarea = document.createElement('textarea');
+                textarea.value = entry;
+                textarea.className = 'markdown-editor';
+                textarea.style.width = '100%';
+                textarea.style.minHeight = '80px';
+                textarea.style.marginBottom = '6px';
+                textarea.style.border = '1px solid #ccc';
+                textarea.style.borderRadius = '6px';
+                textarea.style.padding = '8px';
+                textarea.style.fontFamily = 'monospace';
+                // Toolbar button actions
+                buttons.forEach(btn => {
+                    const b = document.createElement('button');
+                    b.textContent = btn.label;
+                    b.title = btn.title;
+                    b.className = 'btn';
+                    b.style.padding = '4px 10px';
+                    b.onclick = function () {
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        let val = textarea.value;
+                        if (btn.action === '**') {
+                            textarea.value = val.substring(0, start) + '**' + val.substring(start, end) + '**' + val.substring(end);
+                        } else if (btn.action === '_') {
+                            textarea.value = val.substring(0, start) + '_' + val.substring(start, end) + '_' + val.substring(end);
+                        } else if (btn.action === '# ' || btn.action === '## ') {
+                            textarea.value = val.substring(0, start) + '\n' + btn.action + val.substring(start, end) + '\n' + val.substring(end);
+                        } else if (btn.action === '- ') {
+                            textarea.value = val.substring(0, start) + '\n- ' + val.substring(start, end) + '\n' + val.substring(end);
+                        } else if (btn.action === '`') {
+                            textarea.value = val.substring(0, start) + '`' + val.substring(start, end) + '`' + val.substring(end);
+                        }
+                        textarea.focus();
+                    };
+                    toolbar.appendChild(b);
+                });
+                entryDiv.appendChild(toolbar);
+                entryDiv.appendChild(textarea);
+                // Markdown preview
+                const preview = document.createElement('div');
+                preview.className = 'markdown-preview';
+                preview.style.border = '1px solid #eee';
+                preview.style.background = '#f9f9f9';
+                preview.style.borderRadius = '6px';
+                preview.style.padding = '8px';
+                preview.style.marginTop = '4px';
+                preview.style.fontSize = '0.98em';
+                function renderMarkdown(md) {
+                    if (window.marked) {
+                        preview.innerHTML = window.marked.parse(md);
+                    } else {
+                        // Fallback: basic markdown to HTML
+                        preview.innerHTML = md.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                            .replace(/_(.*?)_/g, '<i>$1</i>')
+                            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                            .replace(/\n- (.*)/g, '<ul><li>$1</li></ul>')
+                            .replace(/`([^`]+)`/g, '<code>$1</code>')
+                            .replace(/\n/g, '<br>');
+                    }
+                }
+                renderMarkdown(textarea.value);
+                textarea.addEventListener('input', function () {
+                    renderMarkdown(textarea.value);
+                });
+                entryDiv.appendChild(preview);
+                // Remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'Remove Entry';
+                removeBtn.className = 'btn';
+                removeBtn.style.marginTop = '6px';
+                removeBtn.onclick = function () {
+                    documents[name].splice(i, 1);
+                    saveDocumentsToStorage();
+                    showDocumentModal(name);
+                };
+                entryDiv.appendChild(removeBtn);
                 modalEntries.appendChild(entryDiv);
             });
         }
@@ -483,13 +570,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const closeModalBtn = document.getElementById('close-document-modal');
     if (closeModalBtn) {
-        closeModalBtn.onclick = function() {
+        closeModalBtn.onclick = function () {
             console.debug('Closing document modal');
             document.getElementById('document-modal').classList.add('hidden');
         };
     }
 
-    document.getElementById('modal-save-btn').addEventListener('click', function() {
+    document.getElementById('modal-save-btn').addEventListener('click', function () {
         if (!currentDocument) return;
         console.debug('Saving document:', currentDocument);
         const modalEntries = document.getElementById('modal-document-entries');
@@ -499,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Document saved.');
     });
 
-    document.getElementById('modal-delete-btn').addEventListener('click', function() {
+    document.getElementById('modal-delete-btn').addEventListener('click', function () {
         if (!currentDocument) return;
         console.debug('Deleting document:', currentDocument);
         if (confirm('Are you sure you want to delete this document?')) {
@@ -512,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    document.getElementById('modal-json-btn').addEventListener('click', function() {
+    document.getElementById('modal-json-btn').addEventListener('click', function () {
         if (!currentDocument) return;
         console.debug('Exporting document as JSON:', currentDocument);
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(documents[currentDocument], null, 2));
@@ -522,25 +609,247 @@ document.addEventListener('DOMContentLoaded', function () {
         dlAnchor.click();
     });
 
-    document.getElementById('modal-pdf-btn').addEventListener('click', function() {
+    document.getElementById('modal-pdf-btn').addEventListener('click', function () {
+        console.debug('PDF export button clicked');
         const pdfError = document.getElementById('modal-pdf-error');
         pdfError.classList.add('hidden');
-        if (!currentDocument) return;
+        if (!currentDocument) {
+            console.debug('No current document selected for PDF export');
+            return;
+        }
         if (!window.jspdf || !window.jspdf.jsPDF) {
+            console.debug('jsPDF library not loaded');
             pdfError.textContent = 'jsPDF library not loaded.';
             pdfError.classList.remove('hidden');
             return;
         }
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        let y = 10;
-        documents[currentDocument].forEach((entry, i) => {
-            doc.text(`Entry ${i+1}:`, 10, y);
-            y += 8;
-            doc.text(entry.replace(/<[^>]+>/g, ''), 10, y);
-            y += 16;
-        });
-        doc.save(currentDocument + '.pdf');
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Optimize for minimal ink usage
+            doc.setDrawColor(100);
+            doc.setTextColor(60, 60, 60);
+
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 15;
+            let y = margin;
+            const lineHeight = 6;
+
+            // Function to convert HTML to PDF elements (simplified)
+            function renderHTMLContent(html, startY) {
+                let currentY = startY;
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                function processNode(node, depth = 0) {
+                    if (currentY > doc.internal.pageSize.height - 20) {
+                        doc.addPage();
+                        currentY = margin;
+                    }
+
+                    const nodeMargin = margin + (depth * 5);
+
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent.trim();
+                        if (text) {
+                            const lines = doc.splitTextToSize(text, pageWidth - (nodeMargin * 2));
+                            lines.forEach(line => {
+                                if (currentY > doc.internal.pageSize.height - 10) {
+                                    doc.addPage();
+                                    currentY = margin;
+                                }
+                                doc.text(line, nodeMargin, currentY);
+                                currentY += lineHeight;
+                            });
+                        }
+                    }
+                    else if (node.nodeType === Node.ELEMENT_NODE) {
+                        const tagName = node.tagName.toLowerCase();
+
+                        // Save current style
+                        const originalFont = doc.getFont();
+                        const originalStyle = doc.getFont().fontStyle;
+                        const originalSize = doc.getFontSize();
+                        const originalColor = doc.getTextColor();
+
+                        // Apply styles based on HTML tags
+                        switch (tagName) {
+                            case 'h1':
+                            case 'h2':
+                            case 'h3':
+                                doc.setFont(undefined, 'bold');
+                                doc.setFontSize(originalSize + (14 - parseInt(tagName[1])));
+                                break;
+                            case 'strong':
+                            case 'b':
+                                doc.setFont(undefined, 'bold');
+                                break;
+                            case 'em':
+                            case 'i':
+                                doc.setFont(undefined, 'italic');
+                                break;
+                            case 'code':
+                                doc.setFont('courier', 'normal');
+                                doc.setTextColor(40, 40, 40);
+                                // Light background for code
+                                const textWidth = doc.getTextWidth(node.textContent);
+                                if (textWidth < pageWidth - (nodeMargin * 2)) {
+                                    doc.setFillColor(245, 245, 245);
+                                    doc.rect(nodeMargin - 1, currentY - 3, textWidth + 2, lineHeight, 'F');
+                                }
+                                break;
+                            case 'pre':
+                                // Code block handling
+                                doc.setFont('courier', 'normal');
+                                doc.setFontSize(8);
+                                doc.setTextColor(40, 40, 40);
+
+                                const code = node.textContent;
+                                const codeLines = doc.splitTextToSize(code, pageWidth - (margin * 2) - 10);
+                                const codeHeight = (codeLines.length * 5) + 8;
+
+                                if (currentY + codeHeight > doc.internal.pageSize.height - 10) {
+                                    doc.addPage();
+                                    currentY = margin;
+                                }
+
+                                // Code block background and border
+                                doc.setFillColor(245, 245, 245);
+                                doc.rect(margin, currentY - 2, pageWidth - (margin * 2), codeHeight, 'F');
+                                doc.setDrawColor(200);
+                                doc.rect(margin, currentY - 2, pageWidth - (margin * 2), codeHeight);
+
+                                // Render code lines
+                                codeLines.forEach((line, index) => {
+                                    doc.text(line, margin + 4, currentY + (index * 5) + 2);
+                                });
+
+                                currentY += codeHeight + 2;
+                                break;
+                            case 'blockquote':
+                                doc.setFillColor(248, 248, 248);
+                                doc.rect(nodeMargin - 5, currentY - 2, 3, lineHeight + 2, 'F');
+                                break;
+                            case 'ul':
+                            case 'ol':
+                                // List handling
+                                Array.from(node.children).forEach((li, index) => {
+                                    if (currentY > doc.internal.pageSize.height - 10) {
+                                        doc.addPage();
+                                        currentY = margin;
+                                    }
+
+                                    const bullet = tagName === 'ol' ? `${index + 1}.` : '•';
+                                    doc.text(bullet, nodeMargin, currentY);
+                                    processNode(li, depth + 1);
+                                });
+                                return; // Skip normal child processing for lists
+                            case 'li':
+                                doc.text('  ', nodeMargin, currentY);
+                                break;
+                            case 'p':
+                                currentY += 2; // Extra space for paragraphs
+                                break;
+                            case 'hr':
+                                doc.setDrawColor(200);
+                                doc.line(margin, currentY, pageWidth - margin, currentY);
+                                currentY += 8;
+                                return; // Skip child processing
+                        }
+
+                        // Process child nodes
+                        Array.from(node.childNodes).forEach(child => {
+                            currentY = processNode(child, depth + 1);
+                        });
+
+                        // Restore original style
+                        doc.setFont(originalFont.fontName, originalStyle);
+                        doc.setFontSize(originalSize);
+                        doc.setTextColor(originalColor);
+
+                        // Add spacing after certain elements
+                        if (['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'].includes(tagName)) {
+                            currentY += 4;
+                        }
+                    }
+
+                    return currentY;
+                }
+
+                // Process all child nodes
+                Array.from(tempDiv.childNodes).forEach(child => {
+                    currentY = processNode(child);
+                });
+
+                return currentY;
+            }
+
+            // Process each document entry
+            documents[currentDocument].forEach((entry, i) => {
+                // Check if we need a new page
+                if (y > doc.internal.pageSize.height - 20) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                // Entry header
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(60, 60, 60);
+                doc.text(`Entry ${i + 1}:`, margin, y);
+                y += lineHeight + 2;
+
+                try {
+                    // Convert markdown to HTML using a markdown library
+                    // Choose one of these popular libraries:
+
+                    // Option 1: If using marked (most common)
+                    const htmlContent = window.marked ? window.marked.parse(entry) : entry;
+
+                    // Option 2: If using marked with options for better security
+                    // const htmlContent = window.marked ? window.marked.parse(entry, {
+                    //     breaks: true,
+                    //     gfm: true
+                    // }) : entry;
+
+                    // Option 3: If using Showdown
+                    // const htmlContent = window.showdown ? (new window.showdown.Converter()).makeHtml(entry) : entry;
+
+                    // Render the HTML content
+                    y = renderHTMLContent(htmlContent, y);
+
+                } catch (mdError) {
+                    console.warn('Markdown parsing failed, falling back to plain text:', mdError);
+                    // Fallback to plain text rendering
+                    const cleanText = entry.replace(/<[^>]+>/g, '');
+                    const lines = doc.splitTextToSize(cleanText, pageWidth - (margin * 2));
+                    lines.forEach(line => {
+                        if (y > doc.internal.pageSize.height - 10) {
+                            doc.addPage();
+                            y = margin;
+                        }
+                        doc.text(line, margin, y);
+                        y += lineHeight;
+                    });
+                }
+
+                // Add spacing between entries (except after last one)
+                if (i < documents[currentDocument].length - 1) {
+                    y += 8;
+                    doc.setDrawColor(200);
+                    doc.line(margin, y, pageWidth - margin, y);
+                    y += 4;
+                }
+            });
+
+            doc.save(currentDocument + '.pdf');
+            console.debug('PDF generated and saved for document:', currentDocument);
+
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            pdfError.textContent = 'Error generating PDF: ' + err.message;
+            pdfError.classList.remove('hidden');
+        }
     });
 
     // Add to document button below each AI response
@@ -572,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 removeBtn.textContent = `Remove from ${currentDocument}`;
                 removeBtn.className = 'btn';
                 removeBtn.style.marginTop = '8px';
-                removeBtn.onclick = function() {
+                removeBtn.onclick = function () {
                     documents[currentDocument] = documents[currentDocument].filter(e => e !== content);
                     saveDocumentsToStorage();
                     alert('Response removed from document.');
@@ -582,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 addBtn.textContent = `Add to ${currentDocument}`;
                 addBtn.className = 'btn';
                 addBtn.style.marginTop = '8px';
-                addBtn.onclick = function() {
+                addBtn.onclick = function () {
                     documents[currentDocument].push(content);
                     saveDocumentsToStorage();
                     alert('Response saved to document.');
@@ -592,7 +901,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 addBtn.textContent = 'Add to new file';
                 addBtn.className = 'btn';
                 addBtn.style.marginTop = '8px';
-                addBtn.onclick = function() {
+                addBtn.onclick = function () {
                     const name = prompt('No document selected. Enter new document name:');
                     if (name && !documents[name]) {
                         documents[name] = [content];

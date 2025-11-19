@@ -9,6 +9,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
         integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Option 1: Marked.js (Recommended) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Option 2: Showdown.js -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script> -->
 </head>
 
 <body>
@@ -145,7 +150,8 @@
                     </div>
                 </div>
                 <div id="document-viewer" class="hidden"
-                    style="background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); padding:16px; margin:16px 0;"></div>
+                    style="background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); padding:16px; margin:16px 0;">
+                </div>
                 <button id="save-response-btn" class="btn btn-primary btn-full" style="margin-top:10px;">Save Last AI
                     Response to Document</button>
 
@@ -217,13 +223,17 @@
     </div>
 
     <!-- Modal for document viewing and editing -->
-    <div id="document-modal" class="hidden" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:2000; display:flex; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:10px; padding:0; min-width:700px; max-width:95vw; max-height:90vh; overflow:auto; position:relative; display:flex;">
-            <div id="modal-sidebar" style="width:220px; background:#f5f7fa; border-right:1px solid #eee; padding:24px 0; overflow-y:auto; height:100%;">
+    <div id="document-modal" class="hidden"
+        style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:2000; display:flex; align-items:center; justify-content:center;">
+        <div
+            style="background:#fff; border-radius:10px; padding:0; min-width:700px; max-width:95vw; max-height:90vh; overflow:auto; position:relative; display:flex;">
+            <div id="modal-sidebar"
+                style="width:220px; background:#f5f7fa; border-right:1px solid #eee; padding:24px 0; overflow-y:auto; height:100%;">
                 <!-- Filenames will be injected here -->
             </div>
             <div style="flex:1; padding:24px; position:relative;">
-                <button id="close-document-modal" type="button" style="position:absolute; top:12px; right:12px; font-size:20px; background:none; border:none; cursor:pointer;">&times;</button>
+                <button id="close-document-modal" type="button"
+                    style="position:absolute; top:12px; right:12px; font-size:20px; background:none; border:none; cursor:pointer;">&times;</button>
                 <h3 id="modal-document-title"></h3>
                 <div id="modal-document-entries"></div>
                 <button id="modal-save-btn" class="btn btn-primary" style="margin-top:10px;">Save Changes</button>
