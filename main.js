@@ -588,6 +588,104 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Document management
+    let documents = JSON.parse(localStorage.getItem('documents') || '{}');
+    let currentDocument = null;
+    let lastAIResponse = '';
+
+    function updateDocumentList() {
+        const docList = document.getElementById('document-list');
+        docList.innerHTML = '<option value="">Select Document</option>';
+        Object.keys(documents).forEach(name => {
+            docList.innerHTML += `<option value="${name}">${name}</option>`;
+        });
+    }
+
+    function saveDocumentsToStorage() {
+        localStorage.setItem('documents', JSON.stringify(documents));
+    }
+
+    document.getElementById('create-document-btn').addEventListener('click', function() {
+        const name = prompt('Enter new document name:');
+        if (name && !documents[name]) {
+            documents[name] = [];
+            saveDocumentsToStorage();
+            updateDocumentList();
+            document.getElementById('document-list').value = name;
+            currentDocument = name;
+        } else if (documents[name]) {
+            alert('Document with this name already exists.');
+        }
+    });
+
+    document.getElementById('document-list').addEventListener('change', function() {
+        currentDocument = this.value;
+    });
+
+    document.getElementById('save-response-btn').addEventListener('click', function() {
+        if (!currentDocument) {
+            alert('Select or create a document first.');
+            return;
+        }
+        if (!lastAIResponse) {
+            alert('No AI response to save.');
+            return;
+        }
+        documents[currentDocument].push(lastAIResponse);
+        saveDocumentsToStorage();
+        alert('Response saved to document.');
+    });
+
+    document.getElementById('view-document-btn').addEventListener('click', function() {
+        if (!currentDocument) {
+            alert('Select a document to view.');
+            return;
+        }
+        const viewer = document.getElementById('document-viewer');
+        viewer.innerHTML = `<h3>Document: ${currentDocument}</h3>` + documents[currentDocument].map((entry, i) => `<div style='margin-bottom:12px;'><strong>Entry ${i+1}:</strong><div>${entry}</div></div>`).join('');
+        viewer.classList.remove('hidden');
+    });
+
+    document.getElementById('delete-document-btn').addEventListener('click', function() {
+        if (!currentDocument) {
+            alert('Select a document to delete.');
+            return;
+        }
+        if (confirm('Are you sure you want to delete this document?')) {
+            delete documents[currentDocument];
+            saveDocumentsToStorage();
+            updateDocumentList();
+            document.getElementById('document-viewer').classList.add('hidden');
+            currentDocument = null;
+        }
+    });
+
+    document.getElementById('export-json-btn').addEventListener('click', function() {
+        if (!currentDocument) {
+            alert('Select a document to export.');
+            return;
+        }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(documents[currentDocument], null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", currentDocument + ".json");
+        dlAnchor.click();
+    });
+
+    document.getElementById('export-pdf-btn').addEventListener('click', function() {
+        if (!currentDocument) {
+            alert('Select a document to export.');
+            return;
+        }
+        const docContent = documents[currentDocument].map((entry, i) => `Entry ${i+1}:\n${entry}\n\n`).join('');
+        const win = window.open('', '_blank');
+        win.document.write(`<pre>${docContent}</pre>`);
+        win.print();
+    });
+
+    updateDocumentList();
+
+    // Save last AI response after each assistant message
     function addMessage(role, content) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role}-message`;
@@ -607,6 +705,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Scroll to bottom
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        if (role === 'assistant') {
+            lastAIResponse = content;
+        }
     }
 
     // Restore last selections from localStorage
@@ -644,17 +746,20 @@ document.addEventListener('DOMContentLoaded', function () {
             populateClassDropdown();
             // Restore selections step by step
             setDropdownValue(classSelect, lastSelections.class);
+            showGroup('subject-group', !!lastSelections.class);
             if (lastSelections.class && topicsHierarchy[lastSelections.class]) {
                 Object.keys(topicsHierarchy[lastSelections.class]).forEach(subject => {
                     subjectSelect.innerHTML += `<option value="${subject}">${subject}</option>`;
                 });
                 setDropdownValue(subjectSelect, lastSelections.subject);
+                showGroup('chapter-group', !!lastSelections.subject);
             }
             if (lastSelections.class && lastSelections.subject && topicsHierarchy[lastSelections.class][lastSelections.subject]) {
                 Object.keys(topicsHierarchy[lastSelections.class][lastSelections.subject]).forEach(chapter => {
                     chapterSelect.innerHTML += `<option value="${chapter}">${chapter}</option>`;
                 });
                 setDropdownValue(chapterSelect, lastSelections.chapter);
+                showGroup('topic-group', !!lastSelections.chapter);
             }
             if (lastSelections.class && lastSelections.subject && lastSelections.chapter && topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter]) {
                 const topicsObj = topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Topics || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Prose?.Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].ShortStories?.Chapters;
@@ -663,6 +768,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
                     });
                     setDropdownValue(topicSelect, lastSelections.topic);
+                    showGroup('subtopic-group', !!lastSelections.topic);
                 }
             }
             if (lastSelections.class && lastSelections.subject && lastSelections.chapter && lastSelections.topic && topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter]) {
