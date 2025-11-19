@@ -39,22 +39,172 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // System prompt templates
+    // System prompt templates
     const systemTemplates = {
-        'tutor': 'Act as a friendly tutor for a {board} {class} {subject} student. Explain concepts in simple language, use real-life examples, and check understanding with questions.',
-        'teacher': 'Act as a strict but fair teacher for a {board} {class} {subject} student. Provide structured explanations, emphasize fundamentals, and include challenging questions.',
-        'explainer': 'Act as a concept explainer for a {board} {class} {subject} student. Break down complex ideas into simple steps, use analogies, and focus on understanding.',
-        'simplifier': 'Act as a content simplifier for a {board} {class} {subject} student. Make difficult topics accessible, avoid jargon, and use everyday examples.',
-        'examiner': 'Act as an experienced examiner for {board} {class} {subject}. Focus on important exam topics, common question patterns, and marking scheme insights for {topic} and {subtopic}.',
-        'career-guide': 'Act as a career guidance counselor specializing in {subject} for {class} {board} students. Connect {topic} - {subtopic} to real-world careers and higher education opportunities.',
-        'storyteller': 'Act as an engaging storyteller teaching {subject} to {class} {board} students. Present {topic} - {subtopic} through stories, historical context, and narrative examples.',
-        'scientist': 'Act as a {subject} scientist/researcher explaining {topic} - {subtopic} to {class} {board} students. Share experimental approaches and scientific methodology.',
-        'problem-solver': 'Act as an expert problem-solver in {subject} for {class} {board} students. Focus on step-by-step problem solving techniques for {topic} - {subtopic}.',
-        'motivator': 'Act as a motivational coach for {class} {board} students learning {subject}. Encourage persistence with {topic} - {subtopic} and share success strategies.',
-        'visual-teacher': 'Act as a visual learning specialist for {board} {class} {subject}. Use descriptive imagery, diagrams, and spatial reasoning to explain {topic} - {subtopic}.',
-        'critical-thinker': 'Act as a critical thinking guide for {class} {board} {subject} students. Encourage analytical thinking and questioning about {topic} - {subtopic}.',
-        'practical-guide': 'Act as a practical applications expert for {subject} with {class} {board} students. Focus on hands-on learning and real-world use of {topic} - {subtopic}.',
-        'quick-learner': 'Act as an accelerated learning coach for {board} {class} {subject}. Provide efficient learning strategies and memory techniques for mastering {topic} - {subtopic}.',
-        'doubt-solver': 'Act as a dedicated doubt-solving assistant for {class} {board} {subject} students. patiently address misconceptions and clarify {topic} - {subtopic} thoroughly.'
+        'tutor': `Act as a friendly tutor for a {board} {class} {subject} student. Explain concepts in simple language, use real-life examples, and check understanding with questions.
+
+**Format your response using markdown:**
+- Use headings with # for main topics
+- Use bullet points for lists
+- Use **bold** for key terms
+- Use code blocks for formulas and equations
+- Use tables for comparisons when helpful
+- Use > for important tips and notes
+- Structure content with clear sections`,
+
+        'teacher': `Act as a strict but fair teacher for a {board} {class} {subject} student. Provide structured explanations, emphasize fundamentals, and include challenging questions.
+
+**Format your response using markdown:**
+- Use hierarchical headings (#, ##, ###)
+- Number steps for procedures
+- Use **bold** for definitions and key concepts
+- Use code blocks for mathematical formulas
+- Create tables for systematic comparisons
+- Use > for warnings about common errors
+- Include practice problems in code blocks`,
+
+        'explainer': `Act as a concept explainer for a {board} {class} {subject} student. Break down complex ideas into simple steps, use analogies, and focus on understanding.
+
+**Format your response using markdown:**
+- Use clear headings for each concept
+- Break content into small, digestible sections
+- Use bullet points for step-by-step explanations
+- Highlight analogies with **bold** or _italics_
+- Use code blocks for technical content
+- Create simple tables for comparisons
+- Use > for key insights and takeaways`,
+
+        'simplifier': `Act as a content simplifier for a {board} {class} {subject} student. Make difficult topics accessible, avoid jargon, and use everyday examples.
+
+**Format your response using markdown:**
+- Use simple, clear headings
+- Short paragraphs and bullet points
+- **Bold** the main ideas
+- Use code blocks only for essential formulas
+- Create simple comparison tables
+- Use > for practical applications
+- Emphasize with _italics_ for important points`,
+
+        'examiner': `Act as an experienced examiner for {board} {class} {subject}. Focus on important exam topics, common question patterns, and marking scheme insights for {topic} and {subtopic}.
+
+**Format your response using markdown:**
+- Use ## for exam topics and ### for subtopics
+- Create tables for mark distribution and weightage
+- Use code blocks for sample questions and solutions
+- **Bold** frequently asked concepts
+- Use > for examiner's tips and tricks
+- Number important points for revision
+- Use bullet points for question patterns`,
+
+        'career-guide': `Act as a career guidance counselor specializing in {subject} for {class} {board} students. Connect {topic} - {subtopic} to real-world careers and higher education opportunities.
+
+**Format your response using markdown:**
+- Use clear headings for different career paths
+- Create tables comparing career options
+- Use bullet points for required skills
+- **Bold** key job roles and opportunities
+- Use > for growth prospects and trends
+- Number the steps to pursue each career
+- Use code blocks for technical skill requirements`,
+
+        'storyteller': `Act as an engaging storyteller teaching {subject} to {class} {board} students. Present {topic} - {subtopic} through stories, historical context, and narrative examples.
+
+**Format your response using markdown:**
+- Use # for main story and ## for key events
+- Use > for memorable quotes and insights
+- Create timelines with bullet points
+- **Bold** important characters and discoveries
+- Use _italics_ for dramatic elements
+- Use code blocks for any technical content
+- Separate different narrative sections clearly`,
+
+        'scientist': `Act as a {subject} scientist/researcher explaining {topic} - {subtopic} to {class} {board} students. Share experimental approaches and scientific methodology.
+
+**Format your response using markdown:**
+- Use ## for hypotheses and ### for methods
+- Create tables for experimental data
+- Use code blocks for calculations and formulas
+- **Bold** scientific principles and laws
+- Number the steps in methodologies
+- Use > for research insights
+- Use bullet points for observations and conclusions`,
+
+        'problem-solver': `Act as an expert problem-solver in {subject} for {class} {board} students. Focus on step-by-step problem solving techniques for {topic} - {subtopic}.
+
+**Format your response using markdown:**
+- Use ## for problem types and ### for solutions
+- Number each step clearly (1., 2., 3.)
+- Use code blocks for all mathematical work
+- **Bold** key formulas and methods
+- Create tables for different approach comparisons
+- Use > for problem-solving tips
+- Separate different problem categories clearly`,
+
+        'motivator': `Act as a motivational coach for {class} {board} students learning {subject}. Encourage persistence with {topic} - {subtopic} and share success strategies.
+
+**Format your response using markdown:**
+- Use inspiring headings with #
+- Use > for motivational quotes and tips
+- Create bullet points for action steps
+- **Bold** key mindset shifts
+- Number progress tracking methods
+- Use tables for goal-setting frameworks
+- Use code blocks for study schedule templates`,
+
+        'visual-teacher': `Act as a visual learning specialist for {board} {class} {subject}. Use descriptive imagery, diagrams, and spatial reasoning to explain {topic} - {subtopic}.
+
+**Format your response using markdown:**
+- Use clear hierarchical headings
+- Create ASCII diagrams in code blocks
+- Use tables to represent spatial relationships
+- **Bold** visual concepts and patterns
+- Use bullet points for visual observation steps
+- Use > for visualization techniques
+- Structure content to build mental images`,
+
+        'critical-thinker': `Act as a critical thinking guide for {class} {board} {subject} students. Encourage analytical thinking and questioning about {topic} - {subtopic}.
+
+**Format your response using markdown:**
+- Use ## for questions and ### for analysis
+- Create tables for argument comparisons
+- Use numbered lists for logical steps
+- **Bold** critical thinking frameworks
+- Use > for thought-provoking questions
+- Use code blocks for logical proofs
+- Use bullet points for evidence evaluation`,
+
+        'practical-guide': `Act as a practical applications expert for {subject} with {class} {board} students. Focus on hands-on learning and real-world use of {topic} - {subtopic}.
+
+**Format your response using markdown:**
+- Use ## for applications and ### for methods
+- Create numbered step-by-step guides
+- Use tables for tool/material comparisons
+- **Bold** safety precautions and tips
+- Use code blocks for measurements and calculations
+- Use > for practical warnings
+- Bullet points for required materials`,
+
+        'quick-learner': `Act as an accelerated learning coach for {board} {class} {subject}. Provide efficient learning strategies and memory techniques for mastering {topic} - {subtopic}.
+
+**Format your response using markdown:**
+- Use ## for techniques and ### for examples
+- Create tables for method comparisons
+- Number the learning steps sequentially
+- **Bold** memory techniques and acronyms
+- Use code blocks for practice exercises
+- Use > for time-saving tips
+- Bullet points for quick review points`,
+
+        'doubt-solver': `Act as a dedicated doubt-solving assistant for {class} {board} {subject} students. Patiently address misconceptions and clarify {topic} - {subtopic} thoroughly.
+
+**Format your response using markdown:**
+- Use ## for common doubts and ### for clarifications
+- Create comparison tables for correct vs wrong concepts
+- Number the clarification steps
+- **Bold** key corrections
+- Use code blocks for corrected solutions
+- Use > for important clarifications
+- Bullet points for misconception signs`
     };
 
     // Debug: Log DOM elements
@@ -518,6 +668,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             textarea.value = val.substring(0, start) + '`' + val.substring(start, end) + '`' + val.substring(end);
                         }
                         textarea.focus();
+
+                        renderMarkdown(textarea.value);
                     };
                     toolbar.appendChild(b);
                 });
@@ -580,8 +732,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!currentDocument) return;
         console.debug('Saving document:', currentDocument);
         const modalEntries = document.getElementById('modal-document-entries');
-        const editors = modalEntries.querySelectorAll('.wysiwyg-editor');
-        documents[currentDocument] = Array.from(editors).map(ed => ed.innerHTML);
+        const editors = modalEntries.querySelectorAll('.markdown-editor');
+        documents[currentDocument] = Array.from(editors).map(ed => ed.value);
         saveDocumentsToStorage();
         alert('Document saved.');
     });
@@ -609,7 +761,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dlAnchor.click();
     });
 
-    document.getElementById('modal-pdf-btn').addEventListener('click', function () {
+    document.getElementById('modal-pdf-btn').addEventListener('click', async function () {
         console.debug('PDF export button clicked');
         const pdfError = document.getElementById('modal-pdf-error');
         pdfError.classList.add('hidden');
@@ -627,220 +779,270 @@ document.addEventListener('DOMContentLoaded', function () {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Optimize for minimal ink usage
-            doc.setDrawColor(100);
-            doc.setTextColor(60, 60, 60);
-
             const pageWidth = doc.internal.pageSize.width;
             const margin = 15;
             let y = margin;
-            const lineHeight = 6;
 
-            // Function to convert HTML to PDF elements (simplified)
-            function renderHTMLContent(html, startY) {
-                let currentY = startY;
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
+            // Function to create and render HTML content as image
+            async function renderMarkdownAsImage(markdownContent, containerWidth) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        // Create temporary container for rendering
+                        const tempContainer = document.createElement('div');
+                        tempContainer.style.width = `${containerWidth - (margin * 2)}px`;
+                        tempContainer.style.padding = '20px';
+                        tempContainer.style.fontFamily = 'Arial, sans-serif';
+                        tempContainer.style.fontSize = '12px';
+                        tempContainer.style.lineHeight = '1.4';
+                        tempContainer.style.color = '#3a3a3a'; // Dark gray for ink optimization
+                        tempContainer.style.background = 'white';
+                        tempContainer.style.position = 'absolute';
+                        tempContainer.style.left = '-9999px'; // Move off-screen
+                        tempContainer.style.top = '0';
 
-                function processNode(node, depth = 0) {
-                    if (currentY > doc.internal.pageSize.height - 20) {
-                        doc.addPage();
-                        currentY = margin;
-                    }
-
-                    const nodeMargin = margin + (depth * 5);
-
-                    if (node.nodeType === Node.TEXT_NODE) {
-                        const text = node.textContent.trim();
-                        if (text) {
-                            const lines = doc.splitTextToSize(text, pageWidth - (nodeMargin * 2));
-                            lines.forEach(line => {
-                                if (currentY > doc.internal.pageSize.height - 10) {
-                                    doc.addPage();
-                                    currentY = margin;
-                                }
-                                doc.text(line, nodeMargin, currentY);
-                                currentY += lineHeight;
+                        // Convert markdown to HTML
+                        let htmlContent;
+                        if (window.marked) {
+                            htmlContent = window.marked.parse(markdownContent, {
+                                breaks: true,
+                                gfm: true
                             });
-                        }
-                    }
-                    else if (node.nodeType === Node.ELEMENT_NODE) {
-                        const tagName = node.tagName.toLowerCase();
-
-                        // Save current style
-                        const originalFont = doc.getFont();
-                        const originalStyle = doc.getFont().fontStyle;
-                        const originalSize = doc.getFontSize();
-                        const originalColor = doc.getTextColor();
-
-                        // Apply styles based on HTML tags
-                        switch (tagName) {
-                            case 'h1':
-                            case 'h2':
-                            case 'h3':
-                                doc.setFont(undefined, 'bold');
-                                doc.setFontSize(originalSize + (14 - parseInt(tagName[1])));
-                                break;
-                            case 'strong':
-                            case 'b':
-                                doc.setFont(undefined, 'bold');
-                                break;
-                            case 'em':
-                            case 'i':
-                                doc.setFont(undefined, 'italic');
-                                break;
-                            case 'code':
-                                doc.setFont('courier', 'normal');
-                                doc.setTextColor(40, 40, 40);
-                                // Light background for code
-                                const textWidth = doc.getTextWidth(node.textContent);
-                                if (textWidth < pageWidth - (nodeMargin * 2)) {
-                                    doc.setFillColor(245, 245, 245);
-                                    doc.rect(nodeMargin - 1, currentY - 3, textWidth + 2, lineHeight, 'F');
-                                }
-                                break;
-                            case 'pre':
-                                // Code block handling
-                                doc.setFont('courier', 'normal');
-                                doc.setFontSize(8);
-                                doc.setTextColor(40, 40, 40);
-
-                                const code = node.textContent;
-                                const codeLines = doc.splitTextToSize(code, pageWidth - (margin * 2) - 10);
-                                const codeHeight = (codeLines.length * 5) + 8;
-
-                                if (currentY + codeHeight > doc.internal.pageSize.height - 10) {
-                                    doc.addPage();
-                                    currentY = margin;
-                                }
-
-                                // Code block background and border
-                                doc.setFillColor(245, 245, 245);
-                                doc.rect(margin, currentY - 2, pageWidth - (margin * 2), codeHeight, 'F');
-                                doc.setDrawColor(200);
-                                doc.rect(margin, currentY - 2, pageWidth - (margin * 2), codeHeight);
-
-                                // Render code lines
-                                codeLines.forEach((line, index) => {
-                                    doc.text(line, margin + 4, currentY + (index * 5) + 2);
-                                });
-
-                                currentY += codeHeight + 2;
-                                break;
-                            case 'blockquote':
-                                doc.setFillColor(248, 248, 248);
-                                doc.rect(nodeMargin - 5, currentY - 2, 3, lineHeight + 2, 'F');
-                                break;
-                            case 'ul':
-                            case 'ol':
-                                // List handling
-                                Array.from(node.children).forEach((li, index) => {
-                                    if (currentY > doc.internal.pageSize.height - 10) {
-                                        doc.addPage();
-                                        currentY = margin;
-                                    }
-
-                                    const bullet = tagName === 'ol' ? `${index + 1}.` : '•';
-                                    doc.text(bullet, nodeMargin, currentY);
-                                    processNode(li, depth + 1);
-                                });
-                                return; // Skip normal child processing for lists
-                            case 'li':
-                                doc.text('  ', nodeMargin, currentY);
-                                break;
-                            case 'p':
-                                currentY += 2; // Extra space for paragraphs
-                                break;
-                            case 'hr':
-                                doc.setDrawColor(200);
-                                doc.line(margin, currentY, pageWidth - margin, currentY);
-                                currentY += 8;
-                                return; // Skip child processing
+                        } else {
+                            // Fallback: basic HTML rendering
+                            htmlContent = markdownContent
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                .replace(/`(.*?)`/g, '<code>$1</code>')
+                                .replace(/\n/g, '<br>');
                         }
 
-                        // Process child nodes
-                        Array.from(node.childNodes).forEach(child => {
-                            currentY = processNode(child, depth + 1);
+                        tempContainer.innerHTML = htmlContent;
+
+                        // Apply styles for better rendering
+                        const styles = `
+                    <style>
+                        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+                            margin: 15px 0 10px 0;
+                            font-weight: bold;
+                            color: #2a2a2a;
+                        }
+                        .markdown-content h1 { font-size: 18px; }
+                        .markdown-content h2 { font-size: 16px; }
+                        .markdown-content h3 { font-size: 14px; }
+                        .markdown-content p {
+                            margin: 8px 0;
+                            line-height: 1.4;
+                        }
+                        .markdown-content code {
+                            background: #f5f5f5;
+                            padding: 2px 4px;
+                            border-radius: 3px;
+                            font-family: 'Courier New', monospace;
+                            font-size: 11px;
+                            color: #d63384;
+                        }
+                        .markdown-content pre {
+                            background: #f8f9fa;
+                            padding: 12px;
+                            border-radius: 5px;
+                            border-left: 4px solid #6c757d;
+                            overflow-x: auto;
+                            margin: 12px 0;
+                            font-family: 'Courier New', monospace;
+                            font-size: 11px;
+                            line-height: 1.3;
+                        }
+                        .markdown-content pre code {
+                            background: none;
+                            padding: 0;
+                            color: #2b2b2b;
+                        }
+                        .markdown-content blockquote {
+                            border-left: 4px solid #e9ecef;
+                            padding-left: 12px;
+                            margin: 12px 0;
+                            color: #6c757d;
+                            background: #f8f9fa;
+                            padding: 8px 12px;
+                        }
+                        .markdown-content ul, .markdown-content ol {
+                            margin: 8px 0;
+                            padding-left: 20px;
+                        }
+                        .markdown-content li {
+                            margin: 4px 0;
+                        }
+                        .markdown-content table {
+                            border-collapse: collapse;
+                            width: 100%;
+                            margin: 12px 0;
+                        }
+                        .markdown-content th, .markdown-content td {
+                            border: 1px solid #dee2e6;
+                            padding: 6px 8px;
+                            text-align: left;
+                        }
+                        .markdown-content th {
+                            background: #f8f9fa;
+                            font-weight: bold;
+                        }
+                        .markdown-content hr {
+                            border: none;
+                            border-top: 1px solid #e9ecef;
+                            margin: 20px 0;
+                        }
+                        .markdown-content a {
+                            color: #0066cc;
+                            text-decoration: none;
+                        }
+                    </style>
+                `;
+
+                        const styleElement = document.createElement('div');
+                        styleElement.innerHTML = styles;
+                        tempContainer.insertBefore(styleElement.firstElementChild, tempContainer.firstChild);
+
+                        // Add markdown-content class to container
+                        tempContainer.className = 'markdown-content';
+
+                        document.body.appendChild(tempContainer);
+
+                        // Use html2canvas to convert HTML to image
+                        const canvas = await html2canvas(tempContainer, {
+                            scale: 2, // Higher scale for better quality
+                            useCORS: true,
+                            allowTaint: true,
+                            backgroundColor: '#ffffff',
+                            logging: false,
+                            width: tempContainer.offsetWidth,
+                            height: tempContainer.scrollHeight,
+                            onclone: (clonedDoc, element) => {
+                                // Ensure styles are applied in the cloned document
+                                element.style.visibility = 'visible';
+                            }
                         });
 
-                        // Restore original style
-                        doc.setFont(originalFont.fontName, originalStyle);
-                        doc.setFontSize(originalSize);
-                        doc.setTextColor(originalColor);
+                        // Clean up
+                        document.body.removeChild(tempContainer);
 
-                        // Add spacing after certain elements
-                        if (['h1', 'h2', 'h3', 'p', 'pre', 'blockquote'].includes(tagName)) {
-                            currentY += 4;
-                        }
+                        resolve({
+                            imageData: canvas.toDataURL('image/jpeg', 0.8), // JPEG with compression for smaller size
+                            height: canvas.height / 2, // Divide by scale factor
+                            width: canvas.width / 2
+                        });
+
+                    } catch (error) {
+                        reject(error);
                     }
-
-                    return currentY;
-                }
-
-                // Process all child nodes
-                Array.from(tempDiv.childNodes).forEach(child => {
-                    currentY = processNode(child);
                 });
-
-                return currentY;
             }
 
             // Process each document entry
-            documents[currentDocument].forEach((entry, i) => {
+            for (let i = 0; i < documents[currentDocument].length; i++) {
+                const entry = documents[currentDocument][i];
+
                 // Check if we need a new page
-                if (y > doc.internal.pageSize.height - 20) {
+                if (y > doc.internal.pageSize.height - 50) {
                     doc.addPage();
                     y = margin;
                 }
 
-                // Entry header
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(60, 60, 60);
-                doc.text(`Entry ${i + 1}:`, margin, y);
-                y += lineHeight + 2;
-
                 try {
-                    // Convert markdown to HTML using a markdown library
-                    // Choose one of these popular libraries:
+                    // Render entry header
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(`Entry ${i + 1}:`, margin, y);
+                    y += 10;
 
-                    // Option 1: If using marked (most common)
-                    const htmlContent = window.marked ? window.marked.parse(entry) : entry;
+                    // Render markdown content as image
+                    const contentWidth = pageWidth - (margin * 2);
+                    const renderedContent = await renderMarkdownAsImage(entry, contentWidth);
 
-                    // Option 2: If using marked with options for better security
-                    // const htmlContent = window.marked ? window.marked.parse(entry, {
-                    //     breaks: true,
-                    //     gfm: true
-                    // }) : entry;
+                    // Calculate image dimensions to fit page width
+                    const imgWidth = contentWidth;
+                    const imgHeight = (renderedContent.height / renderedContent.width) * imgWidth;
 
-                    // Option 3: If using Showdown
-                    // const htmlContent = window.showdown ? (new window.showdown.Converter()).makeHtml(entry) : entry;
+                    // Check if image fits on current page
+                    if (y + imgHeight > doc.internal.pageSize.height - margin) {
+                        // Split content across pages if needed
+                        let remainingHeight = imgHeight;
+                        let currentY = y;
 
-                    // Render the HTML content
-                    y = renderHTMLContent(htmlContent, y);
+                        while (remainingHeight > 0) {
+                            const availableHeight = doc.internal.pageSize.height - currentY - margin;
+                            const chunkHeight = Math.min(remainingHeight, availableHeight);
 
-                } catch (mdError) {
-                    console.warn('Markdown parsing failed, falling back to plain text:', mdError);
-                    // Fallback to plain text rendering
+                            // Add image chunk
+                            doc.addImage(
+                                renderedContent.imageData,
+                                'JPEG',
+                                margin,
+                                currentY,
+                                imgWidth,
+                                chunkHeight,
+                                undefined,
+                                'FAST'
+                            );
+
+                            remainingHeight -= chunkHeight;
+                            currentY += chunkHeight;
+
+                            if (remainingHeight > 0) {
+                                doc.addPage();
+                                currentY = margin;
+                            }
+                        }
+
+                        y = currentY;
+                    } else {
+                        // Add image to current page
+                        doc.addImage(
+                            renderedContent.imageData,
+                            'JPEG',
+                            margin,
+                            y,
+                            imgWidth,
+                            imgHeight,
+                            undefined,
+                            'FAST'
+                        );
+                        y += imgHeight;
+                    }
+
+                    // Add spacing between entries
+                    if (i < documents[currentDocument].length - 1) {
+                        y += 15;
+
+                        // Add subtle separator
+                        if (y < doc.internal.pageSize.height - 10) {
+                            doc.setDrawColor(220);
+                            doc.line(margin, y, pageWidth - margin, y);
+                            y += 10;
+                        }
+                    }
+
+                } catch (renderError) {
+                    console.warn('Failed to render markdown as image, falling back to text:', renderError);
+
+                    // Fallback to text rendering
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(60, 60, 60);
+
                     const cleanText = entry.replace(/<[^>]+>/g, '');
                     const lines = doc.splitTextToSize(cleanText, pageWidth - (margin * 2));
+
                     lines.forEach(line => {
                         if (y > doc.internal.pageSize.height - 10) {
                             doc.addPage();
                             y = margin;
                         }
                         doc.text(line, margin, y);
-                        y += lineHeight;
+                        y += 6;
                     });
-                }
 
-                // Add spacing between entries (except after last one)
-                if (i < documents[currentDocument].length - 1) {
                     y += 8;
-                    doc.setDrawColor(200);
-                    doc.line(margin, y, pageWidth - margin, y);
-                    y += 4;
                 }
-            });
+            }
 
             doc.save(currentDocument + '.pdf');
             console.debug('PDF generated and saved for document:', currentDocument);
