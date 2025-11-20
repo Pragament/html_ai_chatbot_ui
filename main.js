@@ -250,9 +250,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const cls = classSelect.value;
         const subject = subjectSelect.value;
         const topicType = topicTypeSelect.value;
-        const chapter = chapterSelect.value;
-        const topic = topicSelect.value;
-        const subtopic = subtopicSelect.value;
+        const chapter = getSelectedChapters();
+        const topic = getSelectedTopics();
+        const subtopic = getSelectedSubtopics();
         console.debug('Updating preview with:', {
             systemRole,
             board,
@@ -311,9 +311,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const cls = classSelect.value;
         const subject = subjectSelect.value;
         const topicType = topicTypeSelect.value;
-        const chapter = chapterSelect.value;
-        const topic = topicSelect.value;
-        const subtopic = subtopicSelect.value;
+        const chapter = getSelectedChapters();
+        const topic = getSelectedTopics();
+        const subtopic = getSelectedSubtopics();
         console.debug('Generating content with:', {
             model,
             reasoningEffort,
@@ -1141,21 +1141,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Restore last selections from localStorage
     const lastSelections = JSON.parse(localStorage.getItem('lastSelections') || '{}');
+    console.debug('Restoring last selections:', lastSelections);
 
-    function setDropdownValue(select, value) {
-        if (select && value) {
+    function setDropdownValue(select, value, isMultiple = false) {
+        if (!select || !value) return;
+
+        if (isMultiple && select.multiple) {
+            // Clear previous selections
+            Array.from(select.options).forEach(option => {
+                option.selected = false;
+            });
+
+            // Select new values
+            const values = value.split(',');
+            values.forEach(val => {
+                const option = Array.from(select.options).find(opt => opt.value === val.trim());
+                if (option) {
+                    option.selected = true;
+                }
+            });
+
+            // Trigger change event if needed
+            select.dispatchEvent(new Event('change'));
+        } else {
+            // Single selection
             select.value = value;
         }
     }
 
     function saveSelections() {
+        console.debug('Saving selections to localStorage');
         localStorage.setItem('lastSelections', JSON.stringify({
             class: classSelect.value,
             subject: subjectSelect.value,
-            chapter: chapterSelect.value,
-            topic: topicSelect.value,
-            subtopic: subtopicSelect.value
+            chapter: getSelectedChapters(),
+            topic: getSelectedTopics(),
+            subtopic: getSelectedSubtopics()
         }));
+        console.debug('Selections saved:', {
+            class: classSelect.value,
+            subject: subjectSelect.value,
+            chapter: getSelectedChapters(),
+            topic: getSelectedTopics(),
+            subtopic: getSelectedSubtopics()
+        });
+        updatePreview();
     }
 
     // Attach change listeners to save selections
@@ -1172,9 +1202,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             topicsHierarchy = data;
             populateClassDropdown();
+
             // Restore selections step by step
             setDropdownValue(classSelect, lastSelections.class);
             showGroup('subject-group', !!lastSelections.class);
+
             if (lastSelections.class && topicsHierarchy[lastSelections.class]) {
                 Object.keys(topicsHierarchy[lastSelections.class]).forEach(subject => {
                     subjectSelect.innerHTML += `<option value="${subject}">${subject}</option>`;
@@ -1182,36 +1214,100 @@ document.addEventListener('DOMContentLoaded', function () {
                 setDropdownValue(subjectSelect, lastSelections.subject);
                 showGroup('chapter-group', !!lastSelections.subject);
             }
+
             if (lastSelections.class && lastSelections.subject && topicsHierarchy[lastSelections.class][lastSelections.subject]) {
                 Object.keys(topicsHierarchy[lastSelections.class][lastSelections.subject]).forEach(chapter => {
                     chapterSelect.innerHTML += `<option value="${chapter}">${chapter}</option>`;
                 });
-                setDropdownValue(chapterSelect, lastSelections.chapter);
-                showGroup('topic-group', !!lastSelections.chapter);
-            }
-            if (lastSelections.class && lastSelections.subject && lastSelections.chapter && topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter]) {
-                const topicsObj = topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Topics || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Prose?.Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].ShortStories?.Chapters;
-                if (topicsObj) {
-                    Object.keys(topicsObj).forEach(topic => {
-                        topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
+
+                // Handle multiple chapters
+                if (lastSelections.chapter) {
+                    const selectedChapters = lastSelections.chapter.split(',');
+                    selectedChapters.forEach(chap => {
+                        setDropdownValue(chapterSelect, chap, true); // true for multiple selection
                     });
-                    setDropdownValue(topicSelect, lastSelections.topic);
+                    showGroup('topic-group', !!lastSelections.chapter);
+                }
+            }
+
+            if (lastSelections.class && lastSelections.subject && lastSelections.chapter && topicsHierarchy[lastSelections.class][lastSelections.subject]) {
+                const selectedChapters = lastSelections.chapter.split(',');
+                const uniqueTopics = new Set();
+
+                selectedChapters.forEach(chap => {
+                    if (topicsHierarchy[lastSelections.class][lastSelections.subject][chap]) {
+                        const topicsObj = topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Topics ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Chapters ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Prose?.Chapters ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].ShortStories?.Chapters;
+                        if (topicsObj) {
+                            Object.keys(topicsObj).forEach(topic => {
+                                uniqueTopics.add(topic);
+                            });
+                        } else if (Array.isArray(topicsHierarchy[lastSelections.class][lastSelections.subject][chap])) {
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].forEach(topic => {
+                                uniqueTopics.add(topic);
+                            });
+                        }
+                    }
+                });
+
+                uniqueTopics.forEach(topic => {
+                    topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
+                });
+
+                // Handle multiple topics
+                if (lastSelections.topic) {
+                    const selectedTopics = lastSelections.topic.split(',');
+                    selectedTopics.forEach(topic => {
+                        setDropdownValue(topicSelect, topic, true); // true for multiple selection
+                    });
                     showGroup('subtopic-group', !!lastSelections.topic);
                 }
             }
-            if (lastSelections.class && lastSelections.subject && lastSelections.chapter && lastSelections.topic && topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter]) {
-                let subtopicsArr = [];
-                const topicsObj = topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Topics || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].Prose?.Chapters || topicsHierarchy[lastSelections.class][lastSelections.subject][lastSelections.chapter].ShortStories?.Chapters;
-                if (topicsObj && topicsObj[lastSelections.topic]) {
-                    subtopicsArr = topicsObj[lastSelections.topic].Subtopics || topicsObj[lastSelections.topic];
-                }
-                if (Array.isArray(subtopicsArr)) {
-                    subtopicsArr.forEach(subtopic => {
-                        subtopicSelect.innerHTML += `<option value="${subtopic}">${subtopic}</option>`;
+
+            if (lastSelections.class && lastSelections.subject && lastSelections.chapter && lastSelections.topic && topicsHierarchy[lastSelections.class][lastSelections.subject]) {
+                const selectedChapters = lastSelections.chapter.split(',');
+                const selectedTopics = lastSelections.topic.split(',');
+                const uniqueSubtopics = new Set();
+
+                selectedChapters.forEach(chap => {
+                    if (topicsHierarchy[lastSelections.class][lastSelections.subject][chap]) {
+                        const topicsObj = topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Topics ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Chapters ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].Prose?.Chapters ||
+                            topicsHierarchy[lastSelections.class][lastSelections.subject][chap].ShortStories?.Chapters;
+
+                        if (topicsObj) {
+                            selectedTopics.forEach(topicName => {
+                                if (topicsObj[topicName]) {
+                                    const subtopicsArr = topicsObj[topicName].Subtopics || topicsObj[topicName];
+                                    if (Array.isArray(subtopicsArr)) {
+                                        subtopicsArr.forEach(subtopic => {
+                                            uniqueSubtopics.add(subtopic);
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                uniqueSubtopics.forEach(subtopic => {
+                    subtopicSelect.innerHTML += `<option value="${subtopic}">${subtopic}</option>`;
+                });
+
+                // Handle multiple subtopics
+                if (lastSelections.subtopic) {
+                    const selectedSubtopics = lastSelections.subtopic.split(',');
+                    console.debug('restore Selected subtopics:', selectedSubtopics);
+                    selectedSubtopics.forEach(subtopic => {
+                        console.debug('restore Selected subtopic:', subtopic);
+                        setDropdownValue(subtopicSelect, subtopic, true); // true for multiple selection
                     });
-                    setDropdownValue(subtopicSelect, lastSelections.subtopic);
                 }
             }
+
             updatePreview();
         });
 
@@ -1272,20 +1368,42 @@ document.addEventListener('DOMContentLoaded', function () {
         subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
         const cls = classSelect.value;
         const subject = subjectSelect.value;
-        const chapter = chapterSelect.value;
+        const chapter = getSelectedChapters();
         showGroup('topic-group', !!chapter);
         showGroup('subtopic-group', false);
-        if (cls && subject && chapter && topicsHierarchy[cls][subject][chapter]) {
-            const topicsObj = topicsHierarchy[cls][subject][chapter].Topics || topicsHierarchy[cls][subject][chapter].Chapters || topicsHierarchy[cls][subject][chapter].Prose?.Chapters || topicsHierarchy[cls][subject][chapter].ShortStories?.Chapters;
-            if (topicsObj) {
-                Object.keys(topicsObj).forEach(topic => {
-                    topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
-                });
-            } else if (Array.isArray(topicsHierarchy[cls][subject][chapter])) {
-                topicsHierarchy[cls][subject][chapter].forEach(topic => {
-                    topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
-                });
-            }
+        if (cls && subject && chapter) {
+            // Split the comma-separated chapters string into an array
+            const selectedChapters = chapter.split(',');
+
+            // Clear existing options first
+            topicSelect.innerHTML = '';
+
+            // Use a Set to avoid duplicate topics across multiple chapters
+            const uniqueTopics = new Set();
+
+            selectedChapters.forEach(chap => {
+                if (topicsHierarchy[cls]?.[subject]?.[chap]) {
+                    const topicsObj = topicsHierarchy[cls][subject][chap].Topics ||
+                        topicsHierarchy[cls][subject][chap].Chapters ||
+                        topicsHierarchy[cls][subject][chap].Prose?.Chapters ||
+                        topicsHierarchy[cls][subject][chap].ShortStories?.Chapters;
+
+                    if (topicsObj) {
+                        Object.keys(topicsObj).forEach(topic => {
+                            uniqueTopics.add(topic);
+                        });
+                    } else if (Array.isArray(topicsHierarchy[cls][subject][chap])) {
+                        topicsHierarchy[cls][subject][chap].forEach(topic => {
+                            uniqueTopics.add(topic);
+                        });
+                    }
+                }
+            });
+
+            // Add all unique topics to the select element
+            uniqueTopics.forEach(topic => {
+                topicSelect.innerHTML += `<option value="${topic}">${topic}</option>`;
+            });
         }
     });
 
@@ -1293,32 +1411,67 @@ document.addEventListener('DOMContentLoaded', function () {
         subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
         const cls = classSelect.value;
         const subject = subjectSelect.value;
-        const chapter = chapterSelect.value;
-        const topic = topicSelect.value;
+        const chapter = getSelectedChapters();
+        const topic = getSelectedTopics();
         showGroup('subtopic-group', !!topic);
-        if (cls && subject && chapter && topic && topicsHierarchy[cls][subject][chapter]) {
-            let subtopicsArr = [];
-            const topicsObj = topicsHierarchy[cls][subject][chapter].Topics || topicsHierarchy[cls][subject][chapter].Chapters || topicsHierarchy[cls][subject][chapter].Prose?.Chapters || topicsHierarchy[cls][subject][chapter].ShortStories?.Chapters;
-            if (topicsObj && topicsObj[topic]) {
-                subtopicsArr = topicsObj[topic].Subtopics || topicsObj[topic];
-            }
-            if (Array.isArray(subtopicsArr)) {
-                subtopicsArr.forEach(subtopic => {
-                    subtopicSelect.innerHTML += `<option value="${subtopic}">${subtopic}</option>`;
-                });
-            }
+        if (cls && subject && chapter && topic) {
+            // Split the comma-separated chapters and topics into arrays
+            const selectedChapters = chapter.split(',');
+            const selectedTopics = topic.split(',');
+
+            // Clear existing options first
+            subtopicSelect.innerHTML = '';
+
+            // Use a Set to avoid duplicate subtopics across multiple chapters/topics
+            const uniqueSubtopics = new Set();
+
+            selectedChapters.forEach(chap => {
+                if (topicsHierarchy[cls]?.[subject]?.[chap]) {
+                    const topicsObj = topicsHierarchy[cls][subject][chap].Topics ||
+                        topicsHierarchy[cls][subject][chap].Chapters ||
+                        topicsHierarchy[cls][subject][chap].Prose?.Chapters ||
+                        topicsHierarchy[cls][subject][chap].ShortStories?.Chapters;
+
+                    if (topicsObj) {
+                        selectedTopics.forEach(topicName => {
+                            if (topicsObj[topicName]) {
+                                const subtopicsArr = topicsObj[topicName].Subtopics || topicsObj[topicName];
+                                if (Array.isArray(subtopicsArr)) {
+                                    subtopicsArr.forEach(subtopic => {
+                                        uniqueSubtopics.add(subtopic);
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Add all unique subtopics to the select element
+            uniqueSubtopics.forEach(subtopic => {
+                subtopicSelect.innerHTML += `<option value="${subtopic}">${subtopic}</option>`;
+            });
         }
     });
 
     // Multi-select logic
     function getSelectedChapters() {
-        return Array.from(document.querySelectorAll('#chapter-checkboxes input:checked')).map(cb => cb.value);
+        const selectedOptions = Array.from(chapterSelect.selectedOptions);
+        const values = selectedOptions.map(option => option.value);
+        console.debug('Selected chapters:', values);
+        return values.join(',');
     }
     function getSelectedTopics() {
-        return Array.from(document.querySelectorAll('#topic-checkboxes input:checked')).map(cb => cb.value);
+        const selectedOptions = Array.from(topicSelect.selectedOptions);
+        const values = selectedOptions.map(option => option.value);
+        console.debug('getSelectedTopics:', values);
+        return values.join(',');
     }
     function getSelectedSubtopics() {
-        return Array.from(document.querySelectorAll('#subtopic-checkboxes input:checked')).map(cb => cb.value);
+        const selectedOptions = Array.from(subtopicSelect.selectedOptions);
+        const values = selectedOptions.map(option => option.value);
+        console.debug('getSelectedSubtopics:', values);
+        return values.join(',');
     }
 
     // After document changes, update button

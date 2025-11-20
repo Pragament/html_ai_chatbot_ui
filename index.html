@@ -134,18 +134,18 @@
                 </div>
                 <div class="form-group hidden" id="chapter-group">
                     <label for="chapter">Chapter/Topic</label>
-                    <select id="chapter"></select>
+                    <select id="chapter" multiple size="5"></select>
                 </div>
                 <div class="form-group hidden" id="topic-group">
                     <label for="topic">Topic</label>
-                    <select id="topic"></select>
+                    <select id="topic" multiple size="5"></select>
                 </div>
                 <div class="form-group hidden" id="subtopic-group">
                     <label for="subtopic">Subtopic</label>
-                    <select id="subtopic"></select>
+                    <select id="subtopic" multiple size="5"></select>
                 </div>
 
-                <div class="form-group" id="document-controls">
+                <div class="form-group hidden" id="document-controls">
                     <button id="create-document-btn" class="btn">Create New Document</button>
                     <div id="document-list-container"
                         style="max-height:200px; overflow-y:auto; border:1px solid #eee; border-radius:6px; margin-top:10px; background:#fafafa;">
@@ -154,7 +154,7 @@
                 <div id="document-viewer" class="hidden"
                     style="background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.15); padding:16px; margin:16px 0;">
                 </div>
-                <button id="save-response-btn" class="btn btn-primary btn-full" style="margin-top:10px;">Save Last AI
+                <button id="save-response-btn" class="btn btn-primary btn-full hidden" style="margin-top:10px;">Save Last AI
                     Response to Document</button>
 
                 <div class="guardrail-notice">
