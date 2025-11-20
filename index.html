@@ -16,6 +16,46 @@
 
     <!-- Option 2: Showdown.js -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script> -->
+    <style>
+        /* Additional styles for the toolbar */
+        .toolbar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 10px 0;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .toolbar .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .toolbar label {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .toolbar select {
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .toolbar .form-group {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -24,6 +64,45 @@
             <h1>Educational AI Chatbot</h1>
             <p class="subtitle">Safe, Controlled Learning Environment</p>
         </header>
+
+        <!-- New horizontal toolbar -->
+        <div class="toolbar">
+            <div class="form-group">
+                <label for="board">Educational Board</label>
+                <select id="board">
+                    <option value="CBSE">CBSE</option>
+                    <!-- <option value="ICSE">ICSE</option>
+                    <option value="State Board">State Board</option>
+                    <option value="IB">International Baccalaureate</option>
+                    <option value="Cambridge">Cambridge</option> -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="class">Class/Grade</label>
+                <select id="class"></select>
+            </div>
+            
+            <div class="form-group hidden" id="subject-group">
+                <label for="subject">Subject</label>
+                <select id="subject"></select>
+            </div>
+            
+            <div class="form-group hidden" id="chapter-group">
+                <label for="chapter">Chapter/Topic</label>
+                <select id="chapter" multiple size="3"></select>
+            </div>
+            
+            <div class="form-group hidden" id="topic-group">
+                <label for="topic">Topic</label>
+                <select id="topic" multiple size="3"></select>
+            </div>
+            
+            <div class="form-group hidden" id="subtopic-group">
+                <label for="subtopic">Subtopic</label>
+                <select id="subtopic" multiple size="3"></select>
+            </div>
+        </div>
 
         <div class="chat-container">
             <div class="config-panel">
@@ -111,38 +190,6 @@
                         <option value="revision-notes">Revision Notes</option>
                         <option value="mind-map">Mind Map</option>
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="board">Educational Board</label>
-                    <select id="board">
-                        <option value="CBSE">CBSE</option>
-                        <!-- <option value="ICSE">ICSE</option>
-                        <option value="State Board">State Board</option>
-                        <option value="IB">International Baccalaureate</option>
-                        <option value="Cambridge">Cambridge</option> -->
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="class">Class/Grade</label>
-                    <select id="class"></select>
-                </div>
-                <div class="form-group hidden" id="subject-group">
-                    <label for="subject">Subject</label>
-                    <select id="subject"></select>
-                </div>
-                <div class="form-group hidden" id="chapter-group">
-                    <label for="chapter">Chapter/Topic</label>
-                    <select id="chapter" multiple size="5"></select>
-                </div>
-                <div class="form-group hidden" id="topic-group">
-                    <label for="topic">Topic</label>
-                    <select id="topic" multiple size="5"></select>
-                </div>
-                <div class="form-group hidden" id="subtopic-group">
-                    <label for="subtopic">Subtopic</label>
-                    <select id="subtopic" multiple size="5"></select>
                 </div>
 
                 <div class="form-group hidden" id="document-controls">

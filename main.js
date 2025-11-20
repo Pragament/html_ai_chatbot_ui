@@ -21,21 +21,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // User prompt templates
     const userTemplates = {
-        'practice-problems': "Generate 5 practice problems on '{topic}' - specifically '{subtopic}' from chapter '{chapter}' with step-by-step solutions. Make them appropriate for {class} level studying {subject} under {board} curriculum.",
-        'explain-concept': "Explain the concept of '{topic}' with focus on '{subtopic}' from chapter '{chapter}' in simple terms suitable for a {class} student. Use analogies and real-life examples from {subject} context.",
-        'study-plan': "Create a 1-week study plan for learning '{topic}' - specifically '{subtopic}' from chapter '{chapter}' in {subject} for a {class} {board} student. Include daily topics and practice activities.",
-        'quiz': "Create a 10-question quiz on '{topic}' covering '{subtopic}' from chapter '{chapter}' for {class} {subject}. Include multiple choice questions with answers and explanations.",
-        'examples': "Provide 5 real-life examples and applications of '{topic}' focusing on '{subtopic}' from chapter '{chapter}' in {subject} that a {class} student can relate to.",
-        'summary': "Provide a comprehensive summary of '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} for {class} {board} students. Highlight key points and formulas.",
-        'differences': "Compare and contrast different aspects of '{topic}' and its subtopics, especially '{subtopic}' from chapter '{chapter}' in {subject} for {class} level.",
-        'formulas': "List all important formulas and equations related to '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} for {class} {board} students with explanations.",
-        'definitions': "Provide key definitions and terminology for '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} suitable for {class} level students.",
-        'project-ideas': "Suggest 3 creative project ideas based on '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} for {class} {board} students with implementation steps.",
-        'common-mistakes': "List common mistakes students make when studying '{topic}' - specifically '{subtopic}' from chapter '{chapter}' in {subject} for {class} level and how to avoid them.",
-        'advanced-questions': "Generate 3 challenging advanced questions on '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} for gifted {class} {board} students with detailed solutions.",
-        'visual-learning': "Create visual learning aids and diagrams explanation for '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} suitable for {class} students.",
-        'revision-notes': "Prepare concise revision notes for '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} for {class} {board} exam preparation.",
-        'mind-map': "Create a mind map structure for '{topic}' - '{subtopic}' from chapter '{chapter}' in {subject} showing connections and key concepts for {class} level."
+        'practice-problems': "Generate 5 practice problems {topicPhrase}with step-by-step solutions. Make them appropriate for {class} level studying {subject} under {board} curriculum.",
+
+        'explain-concept': "Explain the concept {topicPhrase}in simple terms suitable for a {class} student. Use analogies and real-life examples from {subject} context.",
+
+        'study-plan': "Create a 1-week study plan for learning {topicPhrase}in {subject} for a {class} {board} student. Include daily topics and practice activities.",
+
+        'quiz': "Create a 10-question quiz {topicPhrase}for {class} {subject}. Include multiple choice questions with answers and explanations.",
+
+        'examples': "Provide 5 real-life examples and applications {topicPhrase}in {subject} that a {class} student can relate to.",
+
+        'summary': "Provide a comprehensive summary {topicPhrase}in {subject} for {class} {board} students. Highlight key points and formulas.",
+
+        'differences': "Compare and contrast different aspects {topicPhrase}in {subject} for {class} level.",
+
+        'formulas': "List all important formulas and equations {topicPhrase}in {subject} for {class} {board} students with explanations.",
+
+        'definitions': "Provide key definitions and terminology {topicPhrase}in {subject} suitable for {class} level students.",
+
+        'project-ideas': "Suggest 3 creative project ideas {topicPhrase}in {subject} for {class} {board} students with implementation steps.",
+
+        'common-mistakes': "List common mistakes students make when studying {topicPhrase}in {subject} for {class} level and how to avoid them.",
+
+        'advanced-questions': "Generate 3 challenging advanced questions {topicPhrase}in {subject} for gifted {class} {board} students with detailed solutions.",
+
+        'visual-learning': "Create visual learning aids and diagrams {topicPhrase}in {subject} suitable for {class} students.",
+
+        'revision-notes': "Prepare concise revision notes {topicPhrase}in {subject} for {class} {board} exam preparation.",
+
+        'mind-map': "Create a mind map structure {topicPhrase}in {subject} showing connections and key concepts for {class} level."
     };
 
     // System prompt templates
@@ -271,14 +285,24 @@ document.addEventListener('DOMContentLoaded', function () {
             .replace('{subject}', subject);
         systemPreview.textContent = `System: ${systemContent}`;
 
-        // Update user preview
+        // Build the topic phrase dynamically
+        let topicPhrase = '';
+        if (topic && topic.trim() !== '') {
+            if (subtopic && subtopic.trim() !== '') {
+                topicPhrase = `on '${topic}' - specifically '${subtopic}' from chapter '${chapter}' `;
+            } else {
+                topicPhrase = `on '${topic}' from chapter '${chapter}' `;
+            }
+        } else {
+            topicPhrase = `from chapter '${chapter}' `;
+        }
+
         const userContent = userTemplates[topicType]
-            .replace(/{chapter}/g, chapter)
             .replace(/{board}/g, board)
             .replace(/{class}/g, cls)
-            .replace(/{topic}/g, topic) // Placeholder for topic
-            .replace(/{subtopic}/g, subtopic) // Placeholder for subtopic
-            .replace(/{subject}/g, subject);
+            .replace(/{subject}/g, subject)
+            .replace(/{topicPhrase}/g, topicPhrase);
+        // Update user preview
         userPreview.textContent = `User: ${userContent}`;
     }
 
@@ -541,6 +565,210 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
+    // Custom context menu for follow-up
+    const contextMenu = document.getElementById('custom-context-menu');
+    const askFollowup = document.getElementById('ask-followup');
+    let selectedText = '';
+
+    // Sentence builder queue
+    let sentenceQueue = [];
+    const addToQueue = document.getElementById('add-to-queue');
+    const sentenceBuilderPanel = document.getElementById('sentence-builder-panel');
+    const queueList = document.getElementById('queue-list');
+    const clearQueueBtn = document.getElementById('clear-queue');
+    const sendQueueBtn = document.getElementById('send-queue');
+
+    // Show context menu on right-click in assistant message if text is selected
+    messagesContainer.addEventListener('contextmenu', function (e) {
+        const selection = window.getSelection();
+        const target = e.target.closest('.assistant-message');
+        if (target && selection && selection.toString().trim().length > 0) {
+            e.preventDefault();
+            selectedText = selection.toString().trim();
+            contextMenu.style.top = e.pageY + 'px';
+            contextMenu.style.left = e.pageX + 'px';
+            contextMenu.style.display = 'block';
+        } else {
+            contextMenu.style.display = 'none';
+        }
+    });
+
+    // Hide context menu on click elsewhere
+    document.addEventListener('click', function (e) {
+        if (!contextMenu.contains(e.target)) {
+            contextMenu.style.display = 'none';
+        }
+    });
+
+    // Ask follow-up question with selected text
+    askFollowup.addEventListener('click', function (e) {
+        if (selectedText) {
+            addMessage('user', selectedText);
+            loading.style.display = 'block';
+            // Get configuration values for context
+            const model = modelSelect.value;
+            const reasoningEffort = reasoningEffortSelect.value;
+            const systemRole = systemPromptSelect.value;
+            const board = boardSelect.value;
+            const cls = classSelect.value;
+            const subject = subjectSelect.value;
+            // Build system prompt
+            const systemContent = systemTemplates[systemRole]
+                .replace('{board}', board)
+                .replace('{class}', cls)
+                .replace('{subject}', subject);
+            if (simulationMode) {
+                simulateApiResponse(selectedText).then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                });
+            } else {
+                // Make API call
+                fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: selectedText }
+                        ]
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`API request failed with status ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        loading.style.display = 'none';
+                        if (data.choices && data.choices[0] && data.choices[0].message) {
+                            addMessage('assistant', data.choices[0].message.content);
+                        } else if (data.content) {
+                            addMessage('assistant', data.content);
+                        } else {
+                            addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                        }
+                    })
+                    .catch(error => {
+                        loading.style.display = 'none';
+                        addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+                        console.error('API Error:', error);
+                    });
+            }
+        }
+        contextMenu.style.display = 'none';
+    });
+
+    // Add selected text to sentence builder queue
+    addToQueue.addEventListener('click', function (e) {
+        if (selectedText) {
+            sentenceQueue.push(selectedText);
+            updateQueuePanel();
+            sentenceBuilderPanel.style.display = 'block';
+        }
+        contextMenu.style.display = 'none';
+    });
+
+    // Update queue panel display
+    function updateQueuePanel() {
+        queueList.innerHTML = '';
+        if (sentenceQueue.length === 0) {
+            queueList.textContent = 'Queue is empty.';
+        } else {
+            queueList.innerHTML = sentenceQueue.map((txt, i) => `<div style='margin-bottom:4px;'>${i + 1}. ${txt}</div>`).join('');
+        }
+    }
+
+    // Clear queue
+    clearQueueBtn.addEventListener('click', function () {
+        sentenceQueue = [];
+        updateQueuePanel();
+        sentenceBuilderPanel.style.display = 'none';
+    });
+
+    // Send queue to AI
+    sendQueueBtn.addEventListener('click', function () {
+        if (sentenceQueue.length > 0) {
+            const fullSentence = sentenceQueue.join(' ');
+            addMessage('user', fullSentence);
+            loading.style.display = 'block';
+            // Get configuration values for context
+            const model = modelSelect.value;
+            const reasoningEffort = reasoningEffortSelect.value;
+            const systemRole = systemPromptSelect.value;
+            const board = boardSelect.value;
+            const cls = classSelect.value;
+            const subject = subjectSelect.value;
+            // Build system prompt
+            const systemContent = systemTemplates[systemRole]
+                .replace('{board}', board)
+                .replace('{class}', cls)
+                .replace('{subject}', subject);
+            if (simulationMode) {
+                simulateApiResponse(fullSentence).then(data => {
+                    loading.style.display = 'none';
+                    if (data.choices && data.choices[0] && data.choices[0].message) {
+                        addMessage('assistant', data.choices[0].message.content);
+                    } else if (data.content) {
+                        addMessage('assistant', data.content);
+                    } else {
+                        addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                    }
+                });
+            } else {
+                // Make API call
+                fetch('https://text.pollinations.ai/openai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        reasoning_effort: reasoningEffort,
+                        messages: [
+                            { role: "system", content: systemContent },
+                            { role: "user", content: fullSentence }
+                        ]
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`API request failed with status ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        loading.style.display = 'none';
+                        if (data.choices && data.choices[0] && data.choices[0].message) {
+                            addMessage('assistant', data.choices[0].message.content);
+                        } else if (data.content) {
+                            addMessage('assistant', data.content);
+                        } else {
+                            addMessage('assistant', 'I received your request but the response format was unexpected. Here is the raw data: ' + JSON.stringify(data));
+                        }
+                    })
+                    .catch(error => {
+                        loading.style.display = 'none';
+                        addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+                        console.error('API Error:', error);
+                    });
+            }
+            sentenceQueue = [];
+            updateQueuePanel();
+            sentenceBuilderPanel.style.display = 'none';
+        }
+    });
 
     // Document management
     let documents = JSON.parse(localStorage.getItem('documents') || '{}');
@@ -1317,9 +1545,9 @@ document.addEventListener('DOMContentLoaded', function () {
             classSelect.innerHTML += `<option value="${cls}">${cls.replace('Class', '')} Grade</option>`;
         });
         subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
-        topicSelect.innerHTML = '<option value="">Select Topic</option>';
-        subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
+        // chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
+        // topicSelect.innerHTML = '<option value="">Select Topic</option>';
+        // subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
     }
 
     // Helper to show/hide form groups
@@ -1327,14 +1555,32 @@ document.addEventListener('DOMContentLoaded', function () {
         const el = document.getElementById(id);
         if (el) {
             el.classList.toggle('hidden', !show);
+
+            // Reset form inputs when hiding the group
+            if (!show) {
+                // Reset single select elements
+                const selectInputs = el.querySelectorAll('select');
+                selectInputs.forEach(select => {
+                    if (select.multiple) {
+                        // For multi-select, deselect all options
+                        Array.from(select.options).forEach(option => {
+                            console.debug('Deselecting option:', option.value);
+                            option.selected = false;
+                        });
+                    } else {
+                        // For single select, reset to default/empty value
+                        select.value = '';
+                    }
+                });
+            }
         }
     }
 
     classSelect.addEventListener('change', function () {
         subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-        chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
-        topicSelect.innerHTML = '<option value="">Select Topic</option>';
-        subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
+        // chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
+        // topicSelect.innerHTML = '<option value="">Select Topic</option>';
+        // subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
         const cls = classSelect.value;
         showGroup('subject-group', !!cls);
         showGroup('chapter-group', false);
@@ -1348,9 +1594,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     subjectSelect.addEventListener('change', function () {
-        chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
-        topicSelect.innerHTML = '<option value="">Select Topic</option>';
-        subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
+        // chapterSelect.innerHTML = '<option value="">Select Chapter/Topic</option>';
+        // topicSelect.innerHTML = '<option value="">Select Topic</option>';
+        // subtopicSelect.innerHTML = '<option value="">Select Subtopic</option>';
         const cls = classSelect.value;
         const subject = subjectSelect.value;
         showGroup('chapter-group', !!subject);
