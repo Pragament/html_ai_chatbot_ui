@@ -1123,13 +1123,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
+
+        // Store original markdown/source for optional view toggle
+        contentDiv.dataset.markdown = content;
+
         if (role === 'assistant' && window.marked) {
             contentDiv.innerHTML = window.marked.parse(content);
+            contentDiv.dataset.mode = 'rendered';
         } else {
             contentDiv.textContent = content;
+            contentDiv.dataset.mode = 'source';
         }
 
         messageDiv.appendChild(headerDiv);
+
+        // For assistant messages, add a small toggle to view rendered markdown or source
+        if (role === 'assistant' && window.marked) {
+            const toggleView = document.createElement('a');
+            toggleView.href = '#';
+            toggleView.textContent = 'View source';
+            toggleView.style.fontSize = '0.8rem';
+            toggleView.style.marginBottom = '4px';
+            toggleView.style.alignSelf = 'flex-end';
+
+            toggleView.addEventListener('click', function (e) {
+                e.preventDefault();
+                const currentMode = contentDiv.dataset.mode || 'rendered';
+                const original = contentDiv.dataset.markdown || '';
+                if (currentMode === 'rendered') {
+                    contentDiv.textContent = original;
+                    contentDiv.dataset.mode = 'source';
+                    toggleView.textContent = 'View rendered';
+                } else {
+                    contentDiv.innerHTML = window.marked.parse(original);
+                    contentDiv.dataset.mode = 'rendered';
+                    toggleView.textContent = 'View source';
+                }
+            });
+
+            messageDiv.appendChild(toggleView);
+        }
+
         messageDiv.appendChild(contentDiv);
 
         messagesContainer.appendChild(messageDiv);

@@ -1,4 +1,292 @@
 {
+    "ComputerClass": {
+        "Excel": {
+            "Introduction to Excel": {
+                "Topics": {
+                    "Basics of Excel Interface": {
+                        "Subtopics": [
+                            "Workbook and Worksheet",
+                            "Ribbon and Tabs",
+                            "Cells, Rows and Columns"
+                        ]
+                    },
+                    "Data Entry and Editing": {
+                        "Subtopics": [
+                            "Entering Data",
+                            "Editing Cells",
+                            "AutoFill"
+                        ]
+                    }
+                }
+            },
+            "Formatting and Functions": {
+                "Topics": {
+                    "Cell Formatting": {
+                        "Subtopics": [
+                            "Font and Color",
+                            "Alignment",
+                            "Number Formatting"
+                        ]
+                    },
+                    "Basic Functions": {
+                        "Subtopics": [
+                            "SUM",
+                            "AVERAGE",
+                            "MAX / MIN",
+                            "COUNT"
+                        ]
+                    }
+                }
+            },
+            "Charts and Data Handling": {
+                "Topics": {
+                    "Charts": {
+                        "Subtopics": [
+                            "Bar Chart",
+                            "Line Chart",
+                            "Pie Chart"
+                        ]
+                    },
+                    "Data Tools": {
+                        "Subtopics": [
+                            "Sorting",
+                            "Filtering",
+                            "Data Validation"
+                        ]
+                    }
+                }
+            }
+        },
+        "Python": {
+            "Introduction to Python": {
+                "Topics": {
+                    "Python Basics": {
+                        "Subtopics": [
+                            "What is Python?",
+                            "Installing Python",
+                            "Running Python Programs"
+                        ]
+                    },
+                    "Syntax and Variables": {
+                        "Subtopics": [
+                            "Indentation",
+                            "Variables and Data Types",
+                            "Input and Output"
+                        ]
+                    }
+                }
+            },
+            "Control Structures": {
+                "Topics": {
+                    "Conditional Statements": {
+                        "Subtopics": [
+                            "if Statement",
+                            "if-else Statement",
+                            "elif Ladder"
+                        ]
+                    },
+                    "Loops": {
+                        "Subtopics": [
+                            "for Loop",
+                            "while Loop",
+                            "break and continue"
+                        ]
+                    }
+                }
+            },
+            "Data Structures": {
+                "Topics": {
+                    "Lists": {
+                        "Subtopics": [
+                            "Creating Lists",
+                            "List Methods",
+                            "Indexing and Slicing"
+                        ]
+                    },
+                    "Dictionaries": {
+                        "Subtopics": [
+                            "Key-Value Pairs",
+                            "Accessing Values",
+                            "Common Methods"
+                        ]
+                    }
+                }
+            }
+        },
+        "Scratch": {
+            "Getting Started with Scratch": {
+                "Topics": {
+                    "Scratch Interface": {
+                        "Subtopics": [
+                            "Stage and Sprites",
+                            "Blocks Palette",
+                            "Scripts Area"
+                        ]
+                    },
+                    "Creating First Program": {
+                        "Subtopics": [
+                            "Motion Blocks",
+                            "Looks Blocks",
+                            "Events Blocks"
+                        ]
+                    }
+                }
+            },
+            "Control and Sensing": {
+                "Topics": {
+                    "Control Blocks": {
+                        "Subtopics": [
+                            "Repeat Loop",
+                            "Forever Loop",
+                            "If-else Condition"
+                        ]
+                    },
+                    "Sensing Blocks": {
+                        "Subtopics": [
+                            "Mouse Position",
+                            "Touching Objects",
+                            "Keyboard Inputs"
+                        ]
+                    }
+                }
+            },
+            "Creating Games": {
+                "Topics": {
+                    "Game Design Basics": {
+                        "Subtopics": [
+                            "Sprites Interaction",
+                            "Scoring System",
+                            "Broadcast Events"
+                        ]
+                    },
+                    "Animation Techniques": {
+                        "Subtopics": [
+                            "Costumes",
+                            "Smooth Movements",
+                            "Background Switching"
+                        ]
+                    }
+                }
+            }
+        },
+        "HTML": {
+            "Basics of HTML": {
+                "Topics": {
+                    "HTML Structure": {
+                        "Subtopics": [
+                            "DOCTYPE",
+                            "html Tag",
+                            "head and body"
+                        ]
+                    },
+                    "Text Formatting": {
+                        "Subtopics": [
+                            "Heading Tags",
+                            "Paragraph Tag",
+                            "Bold, Italic, Underline"
+                        ]
+                    }
+                }
+            },
+            "Links, Images and Lists": {
+                "Topics": {
+                    "Hyperlinks": {
+                        "Subtopics": [
+                            "a Tag",
+                            "Absolute Links",
+                            "Relative Links"
+                        ]
+                    },
+                    "Images": {
+                        "Subtopics": [
+                            "img Tag",
+                            "Attributes: src, alt, width, height"
+                        ]
+                    },
+                    "Lists": {
+                        "Subtopics": [
+                            "Ordered List",
+                            "Unordered List",
+                            "Nested Lists"
+                        ]
+                    }
+                }
+            },
+            "Tables and Forms": {
+                "Topics": {
+                    "Tables": {
+                        "Subtopics": [
+                            "table, tr, td Tags",
+                            "Table Borders",
+                            "Rowspan and Colspan"
+                        ]
+                    },
+                    "Forms": {
+                        "Subtopics": [
+                            "form Tag",
+                            "Input Types",
+                            "Submit Button"
+                        ]
+                    }
+                }
+            }
+        },
+        "CSS": {
+            "Introduction to CSS": {
+                "Topics": {
+                    "CSS Basics": {
+                        "Subtopics": [
+                            "What is CSS?",
+                            "Internal, External, Inline CSS"
+                        ]
+                    },
+                    "Selectors": {
+                        "Subtopics": [
+                            "Element Selector",
+                            "Class Selector",
+                            "ID Selector"
+                        ]
+                    }
+                }
+            },
+            "Styling and Layout": {
+                "Topics": {
+                    "Text and Color Styling": {
+                        "Subtopics": [
+                            "Font Properties",
+                            "Text Alignment",
+                            "Colors"
+                        ]
+                    },
+                    "Box Model": {
+                        "Subtopics": [
+                            "Margin",
+                            "Padding",
+                            "Border"
+                        ]
+                    }
+                }
+            },
+            "Advanced Layouts": {
+                "Topics": {
+                    "Flexbox": {
+                        "Subtopics": [
+                            "Flex Container",
+                            "Flex Items",
+                            "Alignment"
+                        ]
+                    },
+                    "Grid": {
+                        "Subtopics": [
+                            "Grid Container",
+                            "Rows and Columns",
+                            "Gap and Areas"
+                        ]
+                    }
+                }
+            }
+        }
+    },
     "Class7": {
         "Mathematics": {
             "Integers": {
