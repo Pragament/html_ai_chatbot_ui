@@ -1131,9 +1131,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 addBtn.className = 'btn';
                 addBtn.style.marginTop = '8px';
                 addBtn.onclick = function () {
-                    documents[currentDocument].push(content);
-                    saveDocumentsToStorage();
-                    alert('Response saved to document.');
+                    // Build default document name from all user visible fields
+                    const defaultName = [
+                        boardSelect.value,
+                        classSelect.value,
+                        subjectSelect.value,
+                        getSelectedChapters(),
+                        getSelectedTopics(),
+                        getSelectedSubtopics(),
+                        modelSelect.value,
+                        reasoningEffortSelect.value,
+                        systemPromptSelect.value,
+                        topicTypeSelect.value
+                    ].filter(Boolean).join('_').replace(/,+/g, '-');
+                    const name = prompt('No document selected. Enter new document name:', defaultName);
+                    if (name && !documents[name]) {
+                        documents[name] = [content];
+                        documentOrder.unshift(name);
+                        saveDocumentsToStorage();
+                        updateDocumentList();
+                        currentDocument = name;
+                        alert('Response saved to new document.');
+                    } else if (documents[name]) {
+                        alert('Document with this name already exists.');
+                        return;
+                    } else {
+                        return;
+                    }
                 };
                 messageDiv.appendChild(addBtn);
             } else {
@@ -1141,7 +1165,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 addBtn.className = 'btn';
                 addBtn.style.marginTop = '8px';
                 addBtn.onclick = function () {
-                    const name = prompt('No document selected. Enter new document name:');
+                    // Build default document name from all user visible fields
+                    const defaultName = [
+                        boardSelect.value,
+                        classSelect.value,
+                        subjectSelect.value,
+                        getSelectedChapters(),
+                        getSelectedTopics(),
+                        getSelectedSubtopics(),
+                        modelSelect.value,
+                        reasoningEffortSelect.value,
+                        systemPromptSelect.value,
+                        topicTypeSelect.value
+                    ].filter(Boolean).join('_').replace(/,+/g, '-');
+                    const name = prompt('No document selected. Enter new document name:', defaultName);
                     if (name && !documents[name]) {
                         documents[name] = [content];
                         documentOrder.unshift(name);
