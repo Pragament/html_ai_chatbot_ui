@@ -1102,7 +1102,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
-        contentDiv.textContent = content;
+        if (role === 'assistant' && window.marked) {
+            contentDiv.innerHTML = window.marked.parse(content);
+        } else {
+            contentDiv.textContent = content;
+        }
 
         messageDiv.appendChild(headerDiv);
         messageDiv.appendChild(contentDiv);
