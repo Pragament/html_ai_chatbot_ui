@@ -1131,33 +1131,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 addBtn.className = 'btn';
                 addBtn.style.marginTop = '8px';
                 addBtn.onclick = function () {
-                    // Build default document name from all user visible fields
-                    const defaultName = [
-                        boardSelect.value,
-                        classSelect.value,
-                        subjectSelect.value,
-                        getSelectedChapters(),
-                        getSelectedTopics(),
-                        getSelectedSubtopics(),
-                        modelSelect.value,
-                        reasoningEffortSelect.value,
-                        systemPromptSelect.value,
-                        topicTypeSelect.value
-                    ].filter(Boolean).join('_').replace(/,+/g, '-');
-                    const name = prompt('No document selected. Enter new document name:', defaultName);
-                    if (name && !documents[name]) {
-                        documents[name] = [content];
-                        documentOrder.unshift(name);
-                        saveDocumentsToStorage();
-                        updateDocumentList();
-                        currentDocument = name;
-                        alert('Response saved to new document.');
-                    } else if (documents[name]) {
-                        alert('Document with this name already exists.');
-                        return;
-                    } else {
-                        return;
-                    }
+                    documents[currentDocument].push(content);
+                    saveDocumentsToStorage();
+                    alert('Response saved to document.');
                 };
                 messageDiv.appendChild(addBtn);
             } else {
@@ -1178,20 +1154,83 @@ document.addEventListener('DOMContentLoaded', function () {
                         systemPromptSelect.value,
                         topicTypeSelect.value
                     ].filter(Boolean).join('_').replace(/,+/g, '-');
-                    const name = prompt('No document selected. Enter new document name:', defaultName);
-                    if (name && !documents[name]) {
+
+                    // Create modal for document name input
+                    let modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100vw';
+                    modal.style.height = '100vh';
+                    modal.style.background = 'rgba(0,0,0,0.3)';
+                    modal.style.display = 'flex';
+                    modal.style.alignItems = 'center';
+                    modal.style.justifyContent = 'center';
+                    modal.style.zIndex = '9999';
+
+                    let box = document.createElement('div');
+                    box.style.background = '#fff';
+                    box.style.padding = '24px';
+                    box.style.borderRadius = '10px';
+                    box.style.boxShadow = '0 2px 16px rgba(0,0,0,0.15)';
+                    box.style.minWidth = '340px';
+                    box.style.display = 'flex';
+                    box.style.flexDirection = 'column';
+                    box.style.gap = '12px';
+
+                    let label = document.createElement('label');
+                    label.textContent = 'Enter new document name:';
+                    label.style.fontWeight = 'bold';
+                    box.appendChild(label);
+
+                    let textarea = document.createElement('textarea');
+                    textarea.value = defaultName;
+                    textarea.rows = 3;
+                    textarea.style.width = '100%';
+                    textarea.style.fontSize = '1em';
+                    textarea.style.padding = '8px';
+                    textarea.style.borderRadius = '6px';
+                    textarea.style.border = '1px solid #ccc';
+                    box.appendChild(textarea);
+
+                    let btnRow = document.createElement('div');
+                    btnRow.style.display = 'flex';
+                    btnRow.style.justifyContent = 'flex-end';
+                    btnRow.style.gap = '10px';
+
+                    let cancelBtn = document.createElement('button');
+                    cancelBtn.textContent = 'Cancel';
+                    cancelBtn.className = 'btn';
+                    cancelBtn.onclick = function () {
+                        document.body.removeChild(modal);
+                    };
+                    btnRow.appendChild(cancelBtn);
+
+                    let okBtn = document.createElement('button');
+                    okBtn.textContent = 'Save';
+                    okBtn.className = 'btn';
+                    okBtn.style.background = '#007bff';
+                    okBtn.style.color = '#fff';
+                    okBtn.onclick = function () {
+                        const name = textarea.value.trim();
+                        if (!name) return;
+                        if (documents[name]) {
+                            alert('Document with this name already exists.');
+                            return;
+                        }
                         documents[name] = [content];
                         documentOrder.unshift(name);
                         saveDocumentsToStorage();
                         updateDocumentList();
                         currentDocument = name;
                         alert('Response saved to new document.');
-                    } else if (documents[name]) {
-                        alert('Document with this name already exists.');
-                        return;
-                    } else {
-                        return;
-                    }
+                        document.body.removeChild(modal);
+                    };
+                    btnRow.appendChild(okBtn);
+
+                    box.appendChild(btnRow);
+                    modal.appendChild(box);
+                    document.body.appendChild(modal);
                 };
                 messageDiv.appendChild(addBtn);
             }
