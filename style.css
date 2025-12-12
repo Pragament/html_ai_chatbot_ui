@@ -31,6 +31,17 @@ body {
     margin: 0 auto;
     padding: 20px;
 }
+@media (max-width: 1700px) {
+    .container {
+        max-width: 1400px;   /* Smooth fallback for medium-large screens */
+    }
+}
+
+@media (max-width: 1200px) {
+    .container {
+        max-width: 1100px;
+    }
+}
 
 header {
     text-align: center;
@@ -54,14 +65,21 @@ h1 {
 
 .chat-container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
+    grid-template-columns: 460px 1fr;  /* Keep left panel wide */
+    gap: 28px;                         /* Slightly more gap for breathing */
     margin-bottom: 30px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
+    .chat-container {
+        grid-template-columns: 400px 1fr;
+    }
+}
+
+@media (max-width: 992px) {
     .chat-container {
         grid-template-columns: 1fr;
+        gap: 20px;
     }
 }
 
@@ -74,6 +92,7 @@ h1 {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    min-width: 380px; /* Prevents it from getting too narrow */
 }
 /* Reduce bottom margin a bit */
 .config-panel .form-group {
@@ -180,9 +199,9 @@ select:focus {
 
 .message {
     margin-bottom: 15px;
-    padding: 12px;
+    padding: 14px;
     border-radius: 8px;
-    max-width: 80%;
+    max-width: 88%;
 }
 
 .user-message {
@@ -371,4 +390,112 @@ select:focus {
 
 .filters-section select[multiple] {
     height: 120px; /* makes multi-select look nice */
+}
+/* Tips Section - Collapsible */
+#tips-section {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+#toggle-tips {
+    background-color: #f8f9fa !important;
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+    padding: 9px;
+    font-size: 0.94rem;
+}
+
+/* Tips Content Card - Reduced height */
+#tips-content {
+    margin-top: 10px;
+    padding: 12px;                 /* Reduced from 14px */
+    border-radius: 10px;
+    border: 1px solid #e0e7ff;
+    background: #f8fcff;
+    font-size: 0.91rem;            /* Slightly smaller text */
+    line-height: 1.45;
+}
+
+/* Tip Layout - Tighter */
+#tip-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;                     /* Reduced from 12px */
+}
+
+/* Tip Text */
+#tip-text {
+    flex: 1;
+}
+
+/* Title - Compact */
+#tip-title {
+    font-size: 1.02rem;            /* Reduced */
+    margin-bottom: 6px;
+}
+
+/* Description - Tighter */
+#tip-description {
+    margin: 8px 0;                 /* Reduced */
+}
+
+/* Example - Compact ash box */
+#tip-example {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f0f0f0;
+    border-left: 4px solid #999;
+    border-radius: 6px;
+    font-style: italic;
+    white-space: pre-wrap;
+    font-size: 0.90rem;
+}
+
+#tip-example::before {
+    content: "Example:";
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 0.92rem;
+}
+
+/* Purpose - Compact green box */
+#tip-purpose {
+    margin: 10px 0 0 0;
+    padding: 10px;
+    background: #e8f5e9;
+    border-left: 4px solid #4caf50;
+    border-radius: 6px;
+    font-size: 0.90rem;
+}
+
+#tip-purpose::before {
+    content: "Purpose:";
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 5px;
+    font-size: 0.92rem;
+}
+
+/* Arrows - Smaller and tighter */
+.tip-arrow {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 32px;                   /* Reduced from 36px */
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.2rem;             /* Smaller arrow */
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.tip-arrow:hover {
+    background: var(--secondary-color);
+    transform: scale(1.08);
 }

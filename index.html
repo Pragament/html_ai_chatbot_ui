@@ -32,6 +32,25 @@
     <div class="container">
         <div class="chat-container">
             <div class="config-panel">
+                <!-- Collapsible Tips Section -->
+                <div id="tips-section">
+                    <button id="toggle-tips" class="btn btn-full" style="margin-bottom: 16px; background:#f8f9fa; color:#333; border:1px solid #ddd; font-weight:600;">
+                        Tips for Better Learning ▼
+                    </button>
+
+                    <div id="tips-content">
+                        <div id="tip-container">
+                            <button id="prev-tip" class="tip-arrow">←</button>
+                            <div id="tip-text">
+                                <strong id="tip-title">Loading tip...</strong>
+                                <p id="tip-description"></p>
+                                <p id="tip-example"></p>
+                                <p id="tip-purpose"></p>
+                            </div>
+                            <button id="next-tip" class="tip-arrow">→</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="filters-section">
                     <div class="form-group">
                         <label for="board">Educational Board</label>

@@ -1713,3 +1713,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize preview
     updatePreview();
 });
+let tips = [];
+let currentTipIndex = 0;
+
+// Load tips
+fetch('tips.json')
+    .then(r => r.json())
+    .then(data => {
+        tips = data.tips;
+        if (tips.length > 0) {
+            showRandomTip();
+        }
+    })
+    .catch(err => {
+        console.error('Tips failed to load:', err);
+        document.getElementById('tip-text').innerHTML = '<p style="color:#e74c3c;">Tips not available</p>';
+    });
+
+function showRandomTip() {
+    if (tips.length === 0) return;
+    currentTipIndex = Math.floor(Math.random() * tips.length);
+    displayCurrentTip();
+}
+
+function displayCurrentTip() {
+    if (tips.length === 0 || !tips[currentTipIndex]) return;
+    const tip = tips[currentTipIndex];
+    document.getElementById('tip-title').textContent = tip.title;
+    document.getElementById('tip-description').textContent = tip.description;
+    document.getElementById('tip-example').textContent = tip.example;
+    document.getElementById('tip-purpose').textContent = tip.purpose;
+}
+
+// Cycle tips
+document.getElementById('prev-tip').addEventListener('click', () => {
+    currentTipIndex = (currentTipIndex - 1 + tips.length) % tips.length;
+    displayCurrentTip();
+});
+
+document.getElementById('next-tip').addEventListener('click', () => {
+    currentTipIndex = (currentTipIndex + 1) % tips.length;
+    displayCurrentTip();
+});
+
+// Toggle entire tips section
+document.getElementById('toggle-tips').addEventListener('click', function() {
+    const content = document.getElementById('tips-content');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        this.innerHTML = 'Tips for Better Learning ▲';
+    } else {
+        content.style.display = 'none';
+        this.innerHTML = 'Tips for Better Learning ▼';
+    }
+});
