@@ -65,22 +65,36 @@ h1 {
 
 .chat-container {
     display: grid;
-    grid-template-columns: 460px 1fr;  /* Keep left panel wide */
-    gap: 28px;                         /* Slightly more gap for breathing */
+    grid-template-columns: 460px 1fr;
+    gap: 28px;
     margin-bottom: 30px;
+    height: calc(100vh - 40px); /* Adjust if you have top padding */
+    transition: grid-template-columns 0.35s ease;
 }
 
-@media (max-width: 1100px) {
-    .chat-container {
-        grid-template-columns: 400px 1fr;
-    }
-}
-
+/* Tablet and below: stack vertically by default */
 @media (max-width: 992px) {
     .chat-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
+        grid-template-columns: 1fr; /* Full width, stacked */
+        gap: 0;
+        height: auto;
     }
+
+    .config-panel, .chat-area {
+        height: auto;
+        min-height: 500px;
+        margin-bottom: 20px;
+    }
+}
+
+/* When sidebar hidden on large screens: full width chat */
+.sidebar-hidden .chat-container {
+    grid-template-columns: 1fr !important;
+}
+
+/* When sidebar hidden on mobile: still stacked, chat full */
+.sidebar-hidden .config-panel {
+    display: none !important;
 }
 
 .config-panel {
@@ -498,4 +512,90 @@ select:focus {
 .tip-arrow:hover {
     background: var(--secondary-color);
     transform: scale(1.08);
+}
+/* VSCode-style Sidebar Toggle Button */
+.sidebar-toggle-btn {
+    position: fixed;
+    left: 0;
+    top: 10%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 60px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+    background: var(--secondary-color);
+    left: 4px;
+}
+
+.sidebar-toggle-btn .bar {
+    width: 20px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* When panel is hidden, rotate bars to arrow */
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Smooth slide animation for config panel */
+.config-panel {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Hidden state */
+.sidebar-hidden .config-panel {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Expand chat when sidebar hidden */
+.sidebar-hidden .chat-container {
+    grid-template-columns: 0fr 1fr !important;
+}
+
+/* Optional: Add subtle shadow when open */
+.config-panel {
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+}
+/* When sidebar hidden - chat takes full width */
+.sidebar-hidden .chat-container {
+    grid-template-columns: 1fr !important; /* Full width chat */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.sidebar-hidden .config-panel {
+    display: none !important; /* Completely hide to free space */
+}
+
+/* Normal state */
+.chat-container {
+    transition: grid-template-columns 0.3s ease, margin 0.3s ease;
 }
