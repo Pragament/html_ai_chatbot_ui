@@ -843,7 +843,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.getElementById('create-document-btn').addEventListener('click', function () {
-        const name = prompt('Enter new document name:');
+        // Get current subject selection
+        const subject = subjectSelect.value || 'General';
+        const chapter = Array.from(chapterSelect.selectedOptions).map(opt => opt.text).join(', ') || '';
+        const topic = Array.from(topicSelect.selectedOptions).map(opt => opt.text).join(', ') || '';
+        
+        // Generate default document name with subject
+        const defaultName = `${subject}${chapter ? ' - ' + chapter : ''}${topic ? ' - ' + topic : ''}`;
+        const name = prompt('Enter document name:', defaultName);
+        
         if (name && !documents[name]) {
             documents[name] = [];
             documentOrder.unshift(name);
@@ -1230,85 +1238,181 @@ document.addEventListener('DOMContentLoaded', function () {
             // Bottom navigation
             messageDiv.appendChild(navBottom);
 
-            // Your document buttons (keep exactly as before)
+            // Unified "Add to file" button
             lastAIResponse = content;
+            
+            // Check if content is already in current document
+            const isInCurrentDoc = currentDocument && documents[currentDocument] && documents[currentDocument].includes(content);
+            
+            // Create unified button
             let addBtn = document.createElement('button');
-            let removeBtn = document.createElement('button');
-
-            if (currentDocument && documents[currentDocument] && documents[currentDocument].includes(content)) {
-                removeBtn.textContent = `Remove from ${currentDocument}`;
-                removeBtn.className = 'btn';
-                removeBtn.style.marginTop = '8px';
-                removeBtn.onclick = function () {
+            addBtn.textContent = isInCurrentDoc ? `Remove from ${currentDocument}` : 'Add to file';
+            addBtn.className = 'btn';
+            addBtn.style.marginTop = '8px';
+            
+            addBtn.onclick = function () {
+                // If already in current document, just remove it
+                if (isInCurrentDoc) {
                     documents[currentDocument] = documents[currentDocument].filter(e => e !== content);
                     saveDocumentsToStorage();
                     alert('Response removed from document.');
+                    return;
+                }
+                
+                // Show modal with "Existing file" and "New file" options
+                let modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.background = 'rgba(0,0,0,0.4)';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.zIndex = '9999';
+
+                let box = document.createElement('div');
+                box.style.background = '#fff';
+                box.style.padding = '24px';
+                box.style.borderRadius = '10px';
+                box.style.boxShadow = '0 2px 16px rgba(0,0,0,0.15)';
+                box.style.minWidth = '400px';
+                box.style.maxWidth = '600px';
+                box.style.display = 'flex';
+                box.style.flexDirection = 'column';
+                box.style.gap = '16px';
+
+                let title = document.createElement('h3');
+                title.textContent = 'Add response to file';
+                title.style.marginBottom = '8px';
+                title.style.fontSize = '1.3rem';
+                box.appendChild(title);
+
+                // Container for options
+                let optionsContainer = document.createElement('div');
+                optionsContainer.style.display = 'flex';
+                optionsContainer.style.gap = '12px';
+
+                // "Existing file" button
+                let existingFileBtn = document.createElement('button');
+                existingFileBtn.textContent = 'Existing file';
+                existingFileBtn.className = 'btn';
+                existingFileBtn.style.flex = '1';
+                existingFileBtn.style.padding = '12px 20px';
+                existingFileBtn.style.fontSize = '1rem';
+                existingFileBtn.onclick = function () {
+                    // Show list of existing files
+                    box.innerHTML = '';
+                    
+                    let backTitle = document.createElement('h3');
+                    backTitle.textContent = 'Select existing file';
+                    backTitle.style.marginBottom = '12px';
+                    box.appendChild(backTitle);
+                    
+                    if (documentOrder.length === 0) {
+                        let noFiles = document.createElement('p');
+                        noFiles.textContent = 'No existing files. Create a new file instead.';
+                        noFiles.style.color = '#666';
+                        noFiles.style.marginBottom = '16px';
+                        box.appendChild(noFiles);
+                    } else {
+                        let fileList = document.createElement('div');
+                        fileList.style.maxHeight = '400px';
+                        fileList.style.overflowY = 'auto';
+                        fileList.style.marginBottom = '16px';
+                        fileList.style.border = '1px solid #ddd';
+                        fileList.style.borderRadius = '6px';
+                        
+                        documentOrder.forEach(docName => {
+                            let fileItem = document.createElement('div');
+                            fileItem.textContent = docName;
+                            fileItem.style.padding = '12px 16px';
+                            fileItem.style.cursor = 'pointer';
+                            fileItem.style.borderBottom = '1px solid #eee';
+                            fileItem.style.transition = 'background 0.2s';
+                            
+                            fileItem.onmouseenter = function() {
+                                this.style.background = '#f0f4f8';
+                            };
+                            fileItem.onmouseleave = function() {
+                                this.style.background = 'white';
+                            };
+                            
+                            fileItem.onclick = function() {
+                                // Add to selected document
+                                if (documents[docName].includes(content)) {
+                                    alert('This response is already in this document.');
+                                } else {
+                                    documents[docName].push(content);
+                                    currentDocument = docName;
+                                    saveDocumentsToStorage();
+                                    alert(`Response added to ${docName}`);
+                                }
+                                document.body.removeChild(modal);
+                            };
+                            
+                            fileList.appendChild(fileItem);
+                        });
+                        
+                        box.appendChild(fileList);
+                    }
+                    
+                    let closeBtn = document.createElement('button');
+                    closeBtn.textContent = 'Cancel';
+                    closeBtn.className = 'btn';
+                    closeBtn.style.width = '100%';
+                    closeBtn.onclick = function () {
+                        document.body.removeChild(modal);
+                    };
+                    box.appendChild(closeBtn);
                 };
-                messageDiv.appendChild(removeBtn);
-            } else if (currentDocument) {
-                addBtn.textContent = `Add to ${currentDocument}`;
-                addBtn.className = 'btn';
-                addBtn.style.marginTop = '8px';
-                addBtn.onclick = function () {
-                    documents[currentDocument].push(content);
-                    saveDocumentsToStorage();
-                    alert('Response saved to document.');
-                };
-                messageDiv.appendChild(addBtn);
-            } else {
-                addBtn.textContent = 'Add to new file';
-                addBtn.className = 'btn';
-                addBtn.style.marginTop = '8px';
-                addBtn.onclick = function () {
+                optionsContainer.appendChild(existingFileBtn);
+
+                // "New file" button
+                let newFileBtn = document.createElement('button');
+                newFileBtn.textContent = 'New file';
+                newFileBtn.className = 'btn btn-primary';
+                newFileBtn.style.flex = '1';
+                newFileBtn.style.padding = '12px 20px';
+                newFileBtn.style.fontSize = '1rem';
+                newFileBtn.onclick = function () {
+                    // Show new file creation form
+                    box.innerHTML = '';
+                    
+                    let newTitle = document.createElement('h3');
+                    newTitle.textContent = 'Create new file';
+                    newTitle.style.marginBottom = '12px';
+                    box.appendChild(newTitle);
+                    
+                    // Generate subject-focused default name
+                    const subject = subjectSelect.value || 'General';
+                    const chapters = getSelectedChapters();
+                    const topics = getSelectedTopics();
+                    
                     const defaultName = [
-                        boardSelect.value,
-                        classSelect.value,
-                        subjectSelect.value,
-                        getSelectedChapters(),
-                        getSelectedTopics(),
-                        getSelectedSubtopics(),
-                        modelSelect.value,
-                        reasoningEffortSelect.value,
-                        systemPromptSelect.value,
-                        topicTypeSelect.value
-                    ].filter(Boolean).join('_').replace(/,+/g, '-');
-
-                    let modal = document.createElement('div');
-                    modal.style.position = 'fixed';
-                    modal.style.top = '0';
-                    modal.style.left = '0';
-                    modal.style.width = '100vw';
-                    modal.style.height = '100vh';
-                    modal.style.background = 'rgba(0,0,0,0.3)';
-                    modal.style.display = 'flex';
-                    modal.style.alignItems = 'center';
-                    modal.style.justifyContent = 'center';
-                    modal.style.zIndex = '9999';
-
-                    let box = document.createElement('div');
-                    box.style.background = '#fff';
-                    box.style.padding = '24px';
-                    box.style.borderRadius = '10px';
-                    box.style.boxShadow = '0 2px 16px rgba(0,0,0,0.15)';
-                    box.style.minWidth = '340px';
-                    box.style.display = 'flex';
-                    box.style.flexDirection = 'column';
-                    box.style.gap = '12px';
-
+                        subject,
+                        chapters,
+                        topics
+                    ].filter(Boolean).join(' - ');
+                    
                     let label = document.createElement('label');
-                    label.textContent = 'Enter new document name:';
-                    label.style.fontWeight = 'bold';
+                    label.textContent = 'Enter document name:';
+                    label.style.fontWeight = '600';
+                    label.style.marginBottom = '8px';
+                    label.style.display = 'block';
                     box.appendChild(label);
 
-                    let textarea = document.createElement('textarea');
-                    textarea.value = defaultName;
-                    textarea.rows = 3;
-                    textarea.style.width = '100%';
-                    textarea.style.fontSize = '1em';
-                    textarea.style.padding = '8px';
-                    textarea.style.borderRadius = '6px';
-                    textarea.style.border = '1px solid #ccc';
-                    box.appendChild(textarea);
+                    let input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = defaultName;
+                    input.style.width = '100%';
+                    input.style.fontSize = '1em';
+                    input.style.padding = '10px';
+                    input.style.borderRadius = '6px';
+                    input.style.border = '1px solid #ccc';
+                    input.style.marginBottom = '16px';
+                    box.appendChild(input);
 
                     let btnRow = document.createElement('div');
                     btnRow.style.display = 'flex';
@@ -1323,14 +1427,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     };
                     btnRow.appendChild(cancelBtn);
 
-                    let okBtn = document.createElement('button');
-                    okBtn.textContent = 'Save';
-                    okBtn.className = 'btn';
-                    okBtn.style.background = '#007bff';
-                    okBtn.style.color = '#fff';
-                    okBtn.onclick = function () {
-                        const name = textarea.value.trim();
-                        if (!name) return;
+                    let createBtn = document.createElement('button');
+                    createBtn.textContent = 'Create & Add';
+                    createBtn.className = 'btn btn-primary';
+                    createBtn.onclick = function () {
+                        const name = input.value.trim();
+                        if (!name) {
+                            alert('Please enter a document name.');
+                            return;
+                        }
                         if (documents[name]) {
                             alert('Document with this name already exists.');
                             return;
@@ -1340,17 +1445,31 @@ document.addEventListener('DOMContentLoaded', function () {
                         saveDocumentsToStorage();
                         updateDocumentList();
                         currentDocument = name;
-                        alert('Response saved to new document.');
+                        alert(`Response saved to new document: ${name}`);
                         document.body.removeChild(modal);
                     };
-                    btnRow.appendChild(okBtn);
+                    btnRow.appendChild(createBtn);
 
                     box.appendChild(btnRow);
-                    modal.appendChild(box);
-                    document.body.appendChild(modal);
                 };
-                messageDiv.appendChild(addBtn);
-            }
+                optionsContainer.appendChild(newFileBtn);
+
+                box.appendChild(optionsContainer);
+
+                // Cancel button at bottom
+                let cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.className = 'btn';
+                cancelBtn.style.width = '100%';
+                cancelBtn.onclick = function () {
+                    document.body.removeChild(modal);
+                };
+                box.appendChild(cancelBtn);
+
+                modal.appendChild(box);
+                document.body.appendChild(modal);
+            };
+            messageDiv.appendChild(addBtn);
         } else {
             // User message
             const contentDiv = document.createElement('div');

@@ -355,7 +355,7 @@ select:focus {
 }
 
 .close-btn {
-    position: absolute;
+    position: fixed;
     top: 12px;
     right: 16px;
     background: none;
@@ -370,6 +370,7 @@ select:focus {
     justify-content: center;
     border-radius: 50%;
     transition: background 0.2s;
+    z-index: 10000;
 }
 
 .close-btn:hover {
@@ -526,49 +527,100 @@ select:focus {
 /* VSCode-style Sidebar Toggle Button */
 .sidebar-toggle-btn {
     position: fixed;
-    left: 0;
-    top: 10%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 60px;
-    background: var(--primary-color);
+    left: 20px;
+    top: 20px;
+    width: 36px;
+    height: 36px;
+    background: transparent;
     border: none;
-    border-radius: 0 8px 8px 0;
+    border-radius: 6px;
     cursor: pointer;
     z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    gap: 5px;
+    transition: all 0.2s ease;
+    padding: 8px;
+}
+
+.sidebar-toggle-btn::after {
+    content: 'Close sidebar';
+    position: absolute;
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .sidebar-toggle-btn:hover {
-    background: var(--secondary-color);
-    left: 4px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-toggle-btn:hover::after {
+    opacity: 1;
+}
+
+.sidebar-hidden .sidebar-toggle-btn::after {
+    content: 'Open sidebar';
 }
 
 .sidebar-toggle-btn .bar {
     width: 20px;
-    height: 3px;
-    background: white;
+    height: 2px;
+    background: var(--dark-color);
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    display: block;
 }
 
-/* When panel is hidden, rotate bars to arrow */
-.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(1) {
+/* When sidebar is OPEN (not hidden): Show X on hover to close */
+.sidebar-toggle-btn:hover .bar:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
 }
 
-.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(2) {
+.sidebar-toggle-btn:hover .bar:nth-child(2) {
     opacity: 0;
 }
 
-.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(3) {
+.sidebar-toggle-btn:hover .bar:nth-child(3) {
     transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* When sidebar is CLOSED (hidden): Show hamburger menu, and keep it on hover */
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(1) {
+    transform: rotate(0deg) translate(0, 0);
+}
+
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(2) {
+    opacity: 1;
+}
+
+.sidebar-hidden .sidebar-toggle-btn .bar:nth-child(3) {
+    transform: rotate(0deg) translate(0, 0);
+}
+
+/* Keep hamburger menu visible on hover when closed */
+.sidebar-hidden .sidebar-toggle-btn:hover .bar:nth-child(1) {
+    transform: rotate(0deg) translate(0, 0);
+}
+
+.sidebar-hidden .sidebar-toggle-btn:hover .bar:nth-child(2) {
+    opacity: 1;
+}
+
+.sidebar-hidden .sidebar-toggle-btn:hover .bar:nth-child(3) {
+    transform: rotate(0deg) translate(0, 0);
 }
 
 /* Smooth slide animation for config panel */
