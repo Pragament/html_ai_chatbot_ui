@@ -18,6 +18,10 @@
 
     <!-- Option 2: Showdown.js -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script> -->
+    
+    <!-- Shepherd.js for Tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
 </head>
 
 <body>
@@ -38,6 +42,11 @@
     <div class="container">
         <div class="chat-container">
             <div class="config-panel">
+                <!-- Take Tour Button -->
+                <button id="take-tour-btn" class="btn btn-full" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; font-weight: 600; box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3); transition: all 0.3s ease;">
+                     Take Tour
+                </button>
+                
                 <!-- Collapsible Tips Section -->
                 <div id="tips-section">
                     <button id="toggle-tips" class="btn btn-full" style="margin-bottom: 16px; background:#f8f9fa; color:#333; border:1px solid #ddd; font-weight:600;">
