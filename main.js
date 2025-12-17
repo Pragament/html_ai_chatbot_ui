@@ -1882,3 +1882,398 @@ window.addEventListener('resize', function() {
         document.querySelector('.chat-container').style.gridTemplateColumns = '460px 1fr';
     }
 });
+
+// ==================== TOUR SYSTEM ====================
+// Initialize Shepherd Tour
+const tour = new Shepherd.Tour({
+    useModalOverlay: true,
+    defaultStepOptions: {
+        classes: 'shepherd-theme-custom',
+        scrollTo: { behavior: 'smooth', block: 'center' },
+        cancelIcon: {
+            enabled: true
+        }
+    }
+});
+
+// Define tour steps
+tour.addStep({
+    id: 'welcome',
+    text: `<h3>Welcome to the Educational AI Chatbot! 🎓</h3>
+           <p>Let me show you around the key features of this learning platform. This tour will help you get started quickly!</p>`,
+    buttons: [
+        {
+            text: 'Skip Tour',
+            classes: 'shepherd-button-secondary',
+            action: tour.cancel
+        },
+        {
+            text: 'Start Tour',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'config-panel',
+    text: `<h3>Configuration Panel 📋</h3>
+           <p>This is your control center! Here you can configure your learning preferences including:</p>
+           <ul>
+               <li>Educational board (CBSE)</li>
+               <li>Class/Grade level</li>
+               <li>Subject, Chapter, and Topics</li>
+               <li>Learning activities and AI settings</li>
+           </ul>`,
+    attachTo: {
+        element: '.config-panel',
+        on: 'right'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'tips-section',
+    text: `<h3>Learning Tips 💡</h3>
+           <p>Get helpful tips for better learning! Click the arrows to browse through different tips that will enhance your study experience.</p>`,
+    attachTo: {
+        element: '#tips-section',
+        on: 'right'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'filters',
+    text: `<h3>Learning Filters 🎯</h3>
+           <p>Use these filters to narrow down your learning focus. Select your class, subject, chapter, and specific topics to get personalized content.</p>`,
+    attachTo: {
+        element: '.filters-section',
+        on: 'right'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'prompt-preview',
+    text: `<h3>Prompt Preview 👀</h3>
+           <p>See a preview of how your selections will be sent to the AI. This helps you understand exactly what you're asking for!</p>`,
+    attachTo: {
+        element: '.prompt-preview',
+        on: 'right'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'learning-activity',
+    text: `<h3>Learning Activities 📚</h3>
+           <p>Choose from various learning activities like:</p>
+           <ul>
+               <li>Practice Problems</li>
+               <li>Concept Explanations</li>
+               <li>Study Plans & Quizzes</li>
+               <li>Real-life Examples</li>
+               <li>And much more!</li>
+           </ul>`,
+    attachTo: {
+        element: '#topic-type',
+        on: 'right'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'generate-button',
+    text: `<h3>Generate Content Button 🚀</h3>
+           <p>Once you've configured everything, click this button to generate personalized educational content based on your selections!</p>`,
+    attachTo: {
+        element: '#send-btn',
+        on: 'top'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'ai-settings',
+    text: `<h3>Advanced AI Settings ⚙️</h3>
+           <p>Toggle this to access advanced settings like AI model selection and reasoning effort levels. Great for fine-tuning your learning experience!</p>`,
+    attachTo: {
+        element: '#toggle-ai-settings',
+        on: 'top'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'sidebar-toggle',
+    text: `<h3>Sidebar Toggle 📱</h3>
+           <p>Click this hamburger menu to hide/show the configuration panel. Perfect for focusing on your content or viewing on smaller screens!</p>`,
+    attachTo: {
+        element: '#toggle-sidebar',
+        on: 'bottom'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'chat-area',
+    text: `<h3>Chat Area 💬</h3>
+           <p>This is where all the magic happens! Your generated educational content will appear here. You can see both your questions and the AI's detailed responses.</p>`,
+    attachTo: {
+        element: '.chat-area',
+        on: 'left'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'messages-container',
+    text: `<h3>Messages Container 📝</h3>
+           <p>All your conversation history appears here. Scroll through to review previous content, copy text, or export to PDF for offline study!</p>`,
+    attachTo: {
+        element: '#messages-container',
+        on: 'left'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'quick-actions',
+    text: `<h3>Quick Actions ⚡</h3>
+           <p>After getting a response, use these quick actions to:</p>
+           <ul>
+               <li>Get more examples</li>
+               <li>Simplify explanations</li>
+               <li>Test your knowledge</li>
+               <li>And many more follow-up actions!</li>
+           </ul>`,
+    attachTo: {
+        element: '#quick-actions',
+        on: 'top'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'text-selection',
+    text: `<h3>Select Text for Follow-ups 🖱️</h3>
+           <div style="text-align: center; margin-bottom: 24px; background: #f5f5f5; padding: 24px; border-radius: 12px;">
+               <video autoplay loop muted playsinline preload="auto" style="width: 100%; max-width: 850px; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
+                   <source src="gifs/gif1.mp4" type="video/mp4">
+                   <div style="padding: 20px; text-align: center; color: #666;">⏳ Loading video...</div>
+               </video>
+           </div>
+           <p>After getting an AI response, you can <strong>select any text</strong> from the AI's reply and right-click to:</p>
+           <ul>
+               <li><strong>Ask follow-up question</strong> with the selected text</li>
+               <li><strong>Add to Sentence Builder</strong> for later use</li>
+           </ul>
+           <p>This makes it easy to dive deeper into specific parts of the response!</p>`,
+    attachTo: {
+        element: '#messages-container',
+        on: 'left'
+    },
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'sentence-builder',
+    text: `<h3>Sentence Builder 📝</h3>
+           <div style="text-align: center; margin-bottom: 24px; background: #f5f5f5; padding: 24px; border-radius: 12px;">
+               <video autoplay loop muted playsinline preload="auto" style="width: 100%; max-width: 850px; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
+                   <source src="gifs/gif2.mp4" type="video/mp4">
+                   <div style="padding: 20px; text-align: center; color: #666;">⏳ Loading video (15 sec clip)...</div>
+               </video>
+           </div>
+           <p>Build custom questions by collecting text snippets from AI responses!</p>
+           <ul>
+               <li>Select text from any AI response</li>
+               <li>Right-click and choose "Add to Sentence Builder"</li>
+               <li>Combine multiple snippets to form your question</li>
+               <li>Click "Send to AI" to ask your custom question</li>
+           </ul>
+           <p>Perfect for creating complex questions from multiple parts of the conversation!</p>`,
+    buttons: [
+        {
+            text: 'Back',
+            classes: 'shepherd-button-secondary',
+            action: tour.back
+        },
+        {
+            text: 'Next',
+            classes: 'shepherd-button-primary',
+            action: tour.next
+        }
+    ]
+});
+
+tour.addStep({
+    id: 'complete',
+    text: `<h3>You're All Set! 🎉</h3>
+           <p>You now know how to use all the main features of the Educational AI Chatbot, including the powerful text selection and sentence builder features!</p>
+           <p><strong>Pro Tip:</strong> You can always take this tour again by clicking the "Take Tour" button in the configuration panel.</p>`,
+    buttons: [
+        {
+            text: 'Finish Tour',
+            classes: 'shepherd-button-primary',
+            action: tour.complete
+        }
+    ]
+});
+
+// Add event listener to the Take Tour button
+document.getElementById('take-tour-btn').addEventListener('click', function() {
+    // Make sure sidebar is visible for the tour
+    if (body.classList.contains('sidebar-hidden')) {
+        body.classList.remove('sidebar-hidden');
+        localStorage.setItem('sidebarHidden', 'false');
+    }
+    
+    // Start the tour
+    tour.start();
+});
+
+// Optional: Auto-start tour on first visit - disabled since we have the button in splash screen
+// Users can click the "Take Tour" button in the splash screen instead
+
+// Mark tour as completed when finished
+tour.on('complete', function() {
+    localStorage.setItem('tourCompleted', 'true');
+});
+
+tour.on('cancel', function() {
+    localStorage.setItem('tourCompleted', 'true');
+});
