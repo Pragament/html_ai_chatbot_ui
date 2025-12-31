@@ -22,6 +22,19 @@
     <!-- Shepherd.js for Tour -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/css/shepherd.css"/>
     <script src="https://cdn.jsdelivr.net/npm/shepherd.js@11.2.0/dist/js/shepherd.min.js"></script>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Configuration -->
+    <script src="config.js"></script>
+    
+    <!-- Authentication Module -->
+    <script src="supabase-client.js?v=2"></script>
+    <script src="auth.js?v=2"></script>
+    <script src="auth-ui.js?v=2"></script>
+    <script src="auth-helper.js?v=2"></script>
+    
 </head>
 
 <body>
@@ -42,6 +55,11 @@
     <div class="container">
         <div class="chat-container">
             <div class="config-panel">
+                <!-- Login/Logout Button -->
+                <button id="loginBtn" class="btn btn-primary btn-full" style="margin-bottom: 16px;">
+                    Login (Optional)
+                </button>
+                
                 <!-- Take Tour Button -->
                 <button id="take-tour-btn" class="btn btn-full" style="margin-bottom: 16px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; font-weight: 600; box-shadow: 0 2px 8px rgba(74, 111, 165, 0.3); transition: all 0.3s ease;">
                      Take Tour
@@ -304,6 +322,32 @@
 
     <!-- Add to document button below each AI response will be handled by JS -->
     <script src="main.js"></script>
+    
+    <!-- Initialize activity logging integration -->
+    <script>
+        // Integrate activity logging with existing chat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Override the original addMessage to log activities
+            if (window.addMessage) {
+                const originalAddMessage = window.addMessage;
+                let lastUserMessage = '';
+                
+                window.addMessage = function(role, content) {
+                    if (role === 'user') {
+                        lastUserMessage = content;
+                    } else if (role === 'assistant' && lastUserMessage) {
+                        // Log the activity
+                        if (authManager.isAuthenticated) {
+                            authManager.logActivity(lastUserMessage, content);
+                        }
+                        lastUserMessage = '';
+                    }
+                    
+                    return originalAddMessage(role, content);
+                };
+            }
+        });
+    </script>
     <script>
         // Old auto-hide code → remove it
 
