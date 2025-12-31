@@ -1,83 +1,96 @@
-# Educational AI Chatbot UI
+# Educational AI Chatbot - Student Interface
 
-## Prepopulate Toolbar from URL
+# Educational AI Chatbot - Student Interface
 
-You can prepopulate board, class, subject, chapters, topics, and subtopics using URL parameters:
+## Configuration
 
-```
-?board=CBSE&class=Class9&subject=Mathematics&chapters=Polynomials&topics=Definition&subtopics=Binomials
-```
+The chatbot connects to the Express API server to fetch Supabase credentials.
 
-Example:
-```
-http://127.0.0.1:5500/?board=CBSE&class=Class9&subject=Mathematics&chapters=Polynomials&topics=Definition&subtopics=Binomials
-```
+### Development (Local)
 
-- `board`, `class`, `subject` are single values.
-- `chapters`, `topics`, `subtopics` are comma-separated lists for multi-select.
-
-## Overview
-This project is a web-based educational AI chatbot UI designed for safe, controlled learning. It allows students to generate personalized educational content, practice problems, explanations, quizzes, and more, tailored to their curriculum and grade.
-
-## Features
-- Safe, controlled educational content generation
-- Document management and export
-- Markdown editing and preview
-- Multi-select for chapters, topics, subtopics
-- Toolbar for quick configuration
-- Select class, subject, chapter, topic, and subtopic from a hierarchical curriculum (topics-hierarchy.json)
-- Choose AI model, reasoning effort, and system role
-- Generate educational content via AI
-- Quick actions for follow-up questions
-- Right-click context menu to ask follow-up or build sentences from selected AI response text
-- Sentence builder panel to queue, clear, and send custom prompts
-- Simulation mode for fast debugging (add `?simulation=true` to URL)
-
-## Setup
-1. Clone the repository.
-2. Place all files in a web server directory (or use VS Code Live Server).
-3. Ensure topics-hierarchy.json is in the root directory.
-4. Open index.html in your browser.
-
-## Usage
-1. Select your class/grade. Subjects, chapters, topics, and subtopics will update based on your selection.
-2. Configure AI model, reasoning effort, and system role.
-3. Click "Generate Educational Content" to get personalized materials.
-4. Use quick actions or right-click selected AI response text for follow-up questions or sentence building.
-5. Use the sentence builder panel to manage and send custom prompts.
-6. For debugging, use `?simulation=true` in the URL to simulate API responses instantly.
-
-## Debug Logging
-
-To enable debug logging, add `?debug=true` to the URL. This will show extra console logs for dropdown population, selection restoration, and API calls.
-
-Example:
-```
-http://127.0.0.1:5500/?board=CBSE&class=Class9&subject=Mathematics&chapters=Polynomials&topics=Definition&subtopics=Binomials&debug=true
+The default `config.js` is set for local development:
+```javascript
+API_URL: 'http://localhost:3000'
 ```
 
-If `debug=true` is not present, the UI will not log debug information to the console.
+Just run the Express API server locally and it works!
 
-## Developer Documentation
-- **topics-hierarchy.json**: Defines the curriculum hierarchy. Update this file to add or modify classes, subjects, chapters, topics, or subtopics.
-- **main.js**: Handles UI logic, dropdown population, API calls, context menu, and sentence builder features.
-- **index.html**: UI structure. Dropdowns for class, subject, chapter, topic, and subtopic are dynamically populated.
-- **style.css**: UI styling.
-- **Simulation mode**: All API calls are simulated if `simulation=true` is present in the URL.
+### Production (Deployed)
 
-### Extending Curriculum
-- Add new classes, subjects, chapters, topics, or subtopics in topics-hierarchy.json.
-- The UI will automatically reflect changes on reload.
+When deploying, update `config.js` with your deployed API URL:
 
-### Customizing Prompts
-- System and user prompt templates are in main.js. Adjust for different AI behaviors or content types.
+1. Deploy Express API server first (Heroku, Railway, Render, etc.)
+2. Get the API URL (e.g., `https://your-api.herokuapp.com`)
+3. Edit `config.js`:
+   ```javascript
+   API_URL: 'https://your-api.herokuapp.com'  // ← Change this!
+   ```
+4. Deploy the chatbot
 
-### API
-- The default API endpoint is https://text.pollinations.ai/openai. You can change this in main.js if needed.
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
-## Contributing
-- Fork the repo, make changes, and submit a pull request.
-- Please document any new features or curriculum changes in the README.
+## Student Login Flow
 
-## License
-MIT
+### How It Works
+
+1. **Student clicks "Login to Save Progress"**
+2. **Enters UUID** provided by teacher
+3. **Enters PIN/OTP** (if required by configuration)
+4. **Gets Supabase config** from secure Express server
+5. **Config saved to localStorage** for auto-login next time
+6. **Connected!** Progress is now saved to Supabase
+
+### Auto-Login
+
+- Once logged in, config is saved in browser localStorage
+- Next visit: Automatically connects without asking for UUID/PIN
+- Click "Logout" to disconnect and clear saved config
+
+### Security
+
+- Students never see Firestore data directly
+- All config fetching goes through Express server
+- Server validates UUID + PIN before returning config
+- Each configuration can have different access types:
+  - **No PIN**: Public access
+  - **Fixed PIN**: Requires 6-digit PIN
+  - **OTP**: One-time password (expires after use)
+
+## For Teachers
+
+Teachers create configurations at: `http://localhost:8080`
+
+Each configuration gets a unique UUID that students use to login.
+
+## Files
+
+- `index.html` - Main chatbot interface
+- `auth-ui.js` - Login modal and UUID/PIN flow
+- `supabase-client.js` - Supabase connection manager
+- `auth-helper.js` - Login button UI updates
+- `main.js` - Main chatbot logic
+
+## API Endpoint
+
+**POST** `http://localhost:3000/api/config/get`
+
+Request:
+```json
+{
+  "uuid": "config-uuid-here",
+  "pin": "123456"  // optional, depends on access type
+}
+```
+
+Response:
+```json
+{
+  "success": true,
+  "config": {
+    "url": "https://xxx.supabase.co",
+    "anonKey": "eyJhbGc...",
+    "projectId": "xxx"
+  },
+  "name": "Class 10A - 2024"
+}
+```

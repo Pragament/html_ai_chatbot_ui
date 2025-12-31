@@ -1120,6 +1120,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Track last user message for activity logging
+    let lastUserMessage = '';
+
     // Add to document button below each AI response
     function addMessage(role, content) {
         const messageDiv = document.createElement('div');
@@ -1129,6 +1132,31 @@ document.addEventListener('DOMContentLoaded', function () {
         headerDiv.className = 'message-header';
         headerDiv.textContent = role === 'user' ? 'Student' : 'Educational Assistant';
         messageDiv.appendChild(headerDiv);
+
+        // Track user messages for activity logging
+        if (role === 'user') {
+            window.lastUserMessage = content;
+        }
+
+        // Log activity when assistant responds (if connected to Supabase)
+        if (role === 'assistant' && window.lastUserMessage) {
+            if (window.supabaseClient && window.supabaseClient.isReady()) {
+                window.supabaseClient.saveActivity(window.lastUserMessage, content)
+                    .then(() => {
+                        console.log('✅ Activity saved');
+                    })
+                    .catch(err => {
+                        console.error('Failed to save activity:', err);
+                    });
+                window.lastUserMessage = null; // Clear after saving
+            } else {
+                // Show hint to login for saving history (only once per session)
+                if (!sessionStorage.getItem('login_hint_shown')) {
+                    console.log('💡 Tip: Login to save your chat history!');
+                    sessionStorage.setItem('login_hint_shown', 'true');
+                }
+            }
+        }
 
         if (role === 'assistant') {
             // Full content
@@ -1911,6 +1939,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize preview
     updatePreview();
+
+    // Export addMessage function globally for use by auth-ui.js
+    window.addMessage = addMessage;
 });
 let tips = [];
 let currentTipIndex = 0;

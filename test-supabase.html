@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover { background: #0056b3; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Supabase Connection Tester</h1>
+    
+    <div>
+        <h3>Enter Supabase Credentials:</h3>
+        <input type="text" id="url" placeholder="Supabase URL (https://xxx.supabase.co)">
+        <input type="text" id="anonKey" placeholder="Anon Key (eyJhbGc...)">
+        <button onclick="testConnection()">Test Connection</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        async function testConnection() {
+            const url = document.getElementById('url').value.trim();
+            const anonKey = document.getElementById('anonKey').value.trim();
+            const results = document.getElementById('results');
+            
+            results.innerHTML = '<div class="result">Testing...</div>';
+            
+            if (!url || !anonKey) {
+                results.innerHTML = '<div class="result error">Please enter both URL and Anon Key</div>';
+                return;
+            }
+            
+            try {
+                // Create client
+                const client = supabase.createClient(url, anonKey);
+                results.innerHTML += '<div class="result success">✅ Client created successfully</div>';
+                
+                // Test 1: Check students table
+                const { data: studentsData, error: studentsError } = await client
+                    .from('students')
+                    .select('count')
+                    .limit(1);
+                
+                if (studentsError) {
+                    if (studentsError.code === '42P01') {
+                        results.innerHTML += '<div class="result error">❌ Students table does not exist<br>Run SUPABASE_SCHEMA.sql in SQL Editor</div>';
+                    } else {
+                        results.innerHTML += '<div class="result error">❌ Students table error: ' + studentsError.message + '</div>';
+                    }
+                } else {
+                    results.innerHTML += '<div class="result success">✅ Students table exists</div>';
+                }
+                
+                // Test 2: Check activities table
+                const { data: activitiesData, error: activitiesError } = await client
+                    .from('activities')
+                    .select('count')
+                    .limit(1);
+                
+                if (activitiesError) {
+                    if (activitiesError.code === '42P01') {
+                        results.innerHTML += '<div class="result error">❌ Activities table does not exist<br>Run SUPABASE_SCHEMA.sql in SQL Editor</div>';
+                    } else {
+                        results.innerHTML += '<div class="result error">❌ Activities table error: ' + activitiesError.message + '</div>';
+                    }
+                } else {
+                    results.innerHTML += '<div class="result success">✅ Activities table exists</div>';
+                }
+                
+                // Test 3: Try to insert a test student
+                const testStudentId = 'test_' + Date.now();
+                const { data: insertData, error: insertError } = await client
+                    .from('students')
+                    .insert({
+                        student_id: testStudentId,
+                        name: 'Test Student'
+                    })
+                    .select()
+                    .single();
+                
+                if (insertError) {
+                    results.innerHTML += '<div class="result error">❌ Cannot insert student: ' + insertError.message + '</div>';
+                } else {
+                    results.innerHTML += '<div class="result success">✅ Successfully inserted test student</div>';
+                    results.innerHTML += '<pre>' + JSON.stringify(insertData, null, 2) + '</pre>';
+                    
+                    // Clean up - delete test student
+                    await client.from('students').delete().eq('student_id', testStudentId);
+                    results.innerHTML += '<div class="result success">✅ Test student cleaned up</div>';
+                }
+                
+                results.innerHTML += '<div class="result success"><strong>🎉 All tests passed! Your Supabase is ready to use.</strong></div>';
+                
+            } catch (error) {
+                results.innerHTML += '<div class="result error">❌ Unexpected error: ' + error.message + '</div>';
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
